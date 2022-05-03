@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Tailor metrics :: Efficient Resource Management with Kubernetes</title>
+    <link rel="canonical" href="https://redhat-scholars.github.io/kubernetes-apps-resource-management/main/5metrics.html">
+    <link rel="prev" href="4resources.html">
+    <link rel="next" href="6monitoring.html">
+    <meta name="generator" content="Antora 3.0.0">
+    <link rel="stylesheet" href="../../_/css/site.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img src="../../_/img/NewRHDFullLogo_4-color_white-wordmark.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-scholars.github.io">Efficient Resource Management with Kubernetes</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/tekton-tutorial/" target="_blank">Tekton</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="kubernetes-apps-resource-management" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html"></a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="1setup.html">Setup</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="2starter.html">Starter Project</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="3deploy.html">Deploy</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3deploy.html#deploydb">Deploy Database</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3deploy.html#deployapp">Deploy Application</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3deploy.html#accessingservice">Accessing Application</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3deploy.html#deployhowto">Bonus Track: How to develop the app</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="4resources.html">Resource Quotas</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcediscovering">Discovering Resource Limits</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcejvmergonomics">JVM Ergonomics</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourceadjustcontainer">Adjusting Container Resources</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcefinal">Final Words</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcehowto">Bonus Track: Setting Kubernetes values in Quarkus</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="5metrics.html">Tailor metrics</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#metricsquarkus">Metrics in Quarkus</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="6monitoring.html">Observing Memory/CPU</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringrequestlimits">Understanding requests and limits</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringprometheus">Using Prometheus to size/update memory limits</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringovercommiting">Overcomiting</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringbonustrack">Bonus Track: Automatic Requests and Limits</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Efficient Resource Management with Kubernetes</a></li>
+    <li><a href="5metrics.html">Tailor metrics</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/redhat-scholars/kubernetes-apps-resource-management/edit/main/documentation/modules/ROOT/pages/5metrics.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Tailor metrics</h1>
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph">
+<p>One of the important things when defining limits is to monitor the applications in real time getting important metrics.</p>
+</div>
+<div class="paragraph">
+<p>To get the application, clone this repository and go to <code>apps/another-greeting-app</code>.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">git clone https://github.com/redhat-scholars/kubernetes-apps-resource-management.git
+
+cd apps/another-greeting-app</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="metricsquarkus"><a class="anchor" href="#metricsquarkus"></a>Metrics in Quarkus</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Firstly, let&#8217;s add the micrometer extension to our setup.
+In the terminal window run:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw quarkus:add-extension -Dextensions="io.quarkus:quarkus-micrometer,quarkus-micrometer-registry-prometheus"</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_configuration_of_common_tags"><a class="anchor" href="#_configuration_of_common_tags"></a>Configuration of common tags</h3>
+<div class="paragraph">
+<p>When deploying accross multiple projects/namespaces is always good to have an unified view over some application metrics.
+Let&#8217;s define several common tags for the application, varying in value at deployment time:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package com.redhat.developers;
+
+import io.smallrye.config.ConfigMapping;
+
+@ConfigMapping(prefix = "global")
+interface GlobalTagsConfig {
+     String PROFILE = "profile";
+     String REGION = "region";
+     String COUNTRY="country";
+
+     String region();
+     String country();
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>@ConfigMapping(prefix = "global")</code> annotation maps configurations from <code>application.properties</code> prefixed by <code>global</code>:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">global.region=${REGION:CEE} <i class="conum" data-value="1"></i><b>(1)</b>
+global.country=${COUNTRY:'Romania'}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Environment configuration will be named <code>REGION</code> and having the default value <code>CEE</code>.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Further, we will propagate these configurations by via <code>MeterFilter</code> customization:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package com.redhat.developers;
+
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.config.MeterFilter;
+import io.quarkus.runtime.configuration.ProfileManager;
+
+import javax.enterprise.inject.Produces;
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.Arrays;
+
+@Singleton
+public class CustomConfiguration {
+
+    @Inject
+    GlobalTagsConfig tagsConfig;
+
+    @Produces
+    @Singleton
+    public MeterFilter configureTagsForAll() {
+        return MeterFilter.commonTags(Arrays.asList(
+           Tag.of(GlobalTagsConfig.REGION, tagsConfig.region()),
+           Tag.of(GlobalTagsConfig.COUNTRY, tagsConfig.country()),
+           Tag.of(GlobalTagsConfig.PROFILE, ProfileManager.getActiveProfile())
+        ));
+    }
+
+}</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_metrics_definition_at_endpoint_level"><a class="anchor" href="#_metrics_definition_at_endpoint_level"></a>Metrics definition at endpoint level</h3>
+<div class="paragraph">
+<p>When looking to improve the performance of certain application features, is useful to have metrics defined at endpoint level as well.
+Let&#8217;s modify <code>GreetingResource</code> with the following:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package com.redhat.developers;
+
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
+
+import javax.transaction.Transactional;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import java.util.List;
+
+@Path("messages")
+public class GreetingResource {
+
+    public static final String URI = "uri";
+    public static final String API_GREET = "api.greet";
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Transactional
+    @Timed(value = "greetings.creation", longTask = true, extraTags = {URI, API_GREET})<i class="conum" data-value="1"></i><b>(1)</b>
+    public Message create(Message message) {
+        Message.persist(message);
+        return message;
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    @Counted(value = "http.get.requests", extraTags = {URI, API_GREET})<i class="conum" data-value="2"></i><b>(2)</b>
+    public List&lt;Message&gt; findAll() {
+        return Message.findAll().list();
+    }
+
+}</code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Measure expected long running requests with <code>@Timed</code> annotation.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Count the creation of resources with <code>@Counted</code> annotation.</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_inspect_the_custom_metrics"><a class="anchor" href="#_inspect_the_custom_metrics"></a>Inspect the custom metrics</h3>
+<div class="paragraph">
+<p>Start the application in DevMode:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn quarkus:dev</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>and curl a couple of times the <code>/messages</code> endpoint:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl localhost:8080/messages</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can see your custom metrics recorded at <a href="http://localhost:8080/q/metrics" class="bare">http://localhost:8080/q/metrics</a> :</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">jvm_memory_max_bytes{area="heap",country="'Romania'",id="Survivor Space",profile="prod",region="CEE",} 4390912.0
+jvm_memory_max_bytes{area="heap",country="'Romania'",id="Eden Space",profile="prod",region="CEE",} 3.5258368E7
+jvm_memory_max_bytes{area="heap",country="'Romania'",id="Tenured Gen",profile="prod",region="CEE",} 8.8080384E7
+jvm_memory_max_bytes{area="nonheap",country="'Romania'",id="CodeHeap 'profiled nmethods'",profile="prod",region="CEE",} 1.22912768E8
+jvm_memory_max_bytes{area="nonheap",country="'Romania'",id="Compressed Class Space",profile="prod",region="CEE",} 1.073741824E9
+jvm_memory_max_bytes{area="nonheap",country="'Romania'",id="Metaspace",profile="prod",region="CEE",} -1.0
+jvm_memory_max_bytes{area="nonheap",country="'Romania'",id="CodeHeap 'non-nmethods'",profile="prod",region="CEE",} 5828608.0
+jvm_memory_max_bytes{area="nonheap",country="'Romania'",id="CodeHeap 'non-profiled nmethods'",profile="prod",region="CEE",} 1.22916864E8
+# HELP http_get_requests_total
+# TYPE http_get_requests_total counter
+http_get_requests_total{class="com.redhat.developers.GreetingResource",country="'Romania'",exception="none",method="findAll",profile="prod",region="CEE",result="success",uri="api.greet",} 3.0</code></pre>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_deploy_to_kubernetes"><a class="anchor" href="#_deploy_to_kubernetes"></a>Deploy to Kubernetes</h3>
+<div class="paragraph">
+<p>You can deploy your latest code changes by using the command:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvn clean package -Dquarkus.kubernetes.deploy=true -Dquarkus.container-image.push=true</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, we should externalize the configuration to OpenShift resources.
+Firstly, let&#8217;s create a configmap:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create cm country-nl --from-literal=region=Europe --from-literal=country=Netherlands</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And we can append this new resource to our existing deployment:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl set env --from=configmap/country-nl dc/greeting-app</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Rollout the latest <code>DeploymentConfig</code> using:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl rollout latest dc/greeting-app</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can now check your overwritten metrics via:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl $ROUTE_URL/q/metrics</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="4resources.html">Resource Quotas</a></span>
+  <span class="next"><a href="6monitoring.html">Observing Memory/CPU</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

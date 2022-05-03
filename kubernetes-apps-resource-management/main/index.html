@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Welcome to Efficient Resource Management with Kubernetes :: Efficient Resource Management with Kubernetes</title>
+    <link rel="canonical" href="https://redhat-scholars.github.io/kubernetes-apps-resource-management/main/index.html">
+    <link rel="next" href="1setup.html">
+    <meta name="generator" content="Antora 3.0.0">
+    <link rel="stylesheet" href="../../_/css/site.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img src="../../_/img/NewRHDFullLogo_4-color_white-wordmark.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-scholars.github.io">Efficient Resource Management with Kubernetes</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/tekton-tutorial/" target="_blank">Tekton</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="kubernetes-apps-resource-management" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html"></a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="1setup.html">Setup</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="2starter.html">Starter Project</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="3deploy.html">Deploy</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3deploy.html#deploydb">Deploy Database</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3deploy.html#deployapp">Deploy Application</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3deploy.html#accessingservice">Accessing Application</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3deploy.html#deployhowto">Bonus Track: How to develop the app</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="4resources.html">Resource Quotas</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcediscovering">Discovering Resource Limits</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcejvmergonomics">JVM Ergonomics</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourceadjustcontainer">Adjusting Container Resources</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcefinal">Final Words</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcehowto">Bonus Track: Setting Kubernetes values in Quarkus</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="5metrics.html">Tailor metrics</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="5metrics.html#metricsquarkus">Metrics in Quarkus</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="6monitoring.html">Observing Memory/CPU</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringrequestlimits">Understanding requests and limits</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringprometheus">Using Prometheus to size/update memory limits</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringovercommiting">Overcomiting</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringbonustrack">Bonus Track: Automatic Requests and Limits</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link is-current"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Efficient Resource Management with Kubernetes</a></li>
+    <li><a href="index.html">Welcome to Efficient Resource Management with Kubernetes</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/redhat-scholars/kubernetes-apps-resource-management/edit/main/documentation/modules/ROOT/pages/index.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Welcome to Efficient Resource Management with Kubernetes</h1>
+<div class="sect1 text-center strong">
+<h2>Efficient Resource Management</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Let&#8217;s explore best practices and useful settings to manage application’s resources in an Kubernetes cluster. Since the load of cluster usage may increase rapidly due to traffic load and the amount of applications deployed, it&#8217;s better to set up resource quotas to keep the workloads running smoothly.</p>
+</div>
+<div class="imageblock text-center mt-4 center">
+<div class="content">
+<img src="_images/os-overview-image.png" alt="OpenShift Overview Image" width="400" height="400">
+</div>
+</div>
+</div>
+</div>
+<div class="sect1 tiles browse">
+<h2>Browse modules</h2>
+<div class="sectionbody">
+<div class="ulist">
+<ul>
+<li>
+<p><a href="1setup.html" class="xref page">Setup</a></p>
+</li>
+<li>
+<p><a href="2starter.html" class="xref page">Starter Project</a></p>
+</li>
+<li>
+<p><a href="3deploy.html" class="xref page">Deploy</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="3deploy.html#deploydb" class="xref page">Deploy Database</a></p>
+</li>
+<li>
+<p><a href="3deploy.html#deployapp" class="xref page">Deploy Application</a></p>
+</li>
+<li>
+<p><a href="3deploy.html#accessingservice" class="xref page">Accessing Application</a></p>
+</li>
+<li>
+<p><a href="3deploy.html#deployhowto" class="xref page">Bonus Track: How to develop the app</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="4resources.html" class="xref page">Resource Quotas</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="4resources.html#resourcediscovering" class="xref page">Discovering Resource Limits</a></p>
+</li>
+<li>
+<p><a href="4resources.html#resourcejvmergonomics" class="xref page">JVM Ergonomics</a></p>
+</li>
+<li>
+<p><a href="4resources.html#resourceadjustcontainer" class="xref page">Adjusting Container Resources</a></p>
+</li>
+<li>
+<p><a href="4resources.html#resourcefinal" class="xref page">Final Words</a></p>
+</li>
+<li>
+<p><a href="4resources.html#resourcehowto" class="xref page">Bonus Track: Setting Kubernetes values in Quarkus</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="5metrics.html" class="xref page">Tailor metrics</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="5metrics.html#metricsquarkus" class="xref page">Metrics in Quarkus</a></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><a href="6monitoring.html" class="xref page">Observing Memory/CPU</a></p>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="6monitoring.html#monitoringrequestlimits" class="xref page">Understanding requests and limits</a></p>
+</li>
+<li>
+<p><a href="6monitoring.html#monitoringprometheus" class="xref page">Using Prometheus to size/update memory limits</a></p>
+</li>
+<li>
+<p><a href="6monitoring.html#monitoringovercommiting" class="xref page">Overcomiting</a></p>
+</li>
+<li>
+<p><a href="6monitoring.html#monitoringbonustrack" class="xref page">Bonus Track: Automatic Requests and Limits</a></p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="next"><a href="1setup.html">Setup</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

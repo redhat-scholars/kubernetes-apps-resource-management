@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Setup :: Efficient Resource Management with Kubernetes</title>
+    <link rel="canonical" href="https://redhat-scholars.github.io/kubernetes-apps-resource-management/main/1setup.html">
+    <link rel="prev" href="index.html">
+    <link rel="next" href="2starter.html">
+    <meta name="generator" content="Antora 3.0.0">
+    <link rel="stylesheet" href="../../_/css/site.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img src="../../_/img/NewRHDFullLogo_4-color_white-wordmark.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-scholars.github.io">Efficient Resource Management with Kubernetes</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/tekton-tutorial/" target="_blank">Tekton</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="kubernetes-apps-resource-management" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html"></a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item is-current-page" data-depth="1">
+    <a class="nav-link" href="1setup.html">Setup</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="2starter.html">Starter Project</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="3deploy.html">Deploy</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3deploy.html#deploydb">Deploy Database</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3deploy.html#deployapp">Deploy Application</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3deploy.html#accessingservice">Accessing Application</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="3deploy.html#deployhowto">Bonus Track: How to develop the app</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="4resources.html">Resource Quotas</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcediscovering">Discovering Resource Limits</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcejvmergonomics">JVM Ergonomics</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourceadjustcontainer">Adjusting Container Resources</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcefinal">Final Words</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcehowto">Bonus Track: Setting Kubernetes values in Quarkus</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="5metrics.html">Tailor metrics</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="5metrics.html#metricsquarkus">Metrics in Quarkus</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="6monitoring.html">Observing Memory/CPU</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringrequestlimits">Understanding requests and limits</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringprometheus">Using Prometheus to size/update memory limits</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringovercommiting">Overcomiting</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringbonustrack">Bonus Track: Automatic Requests and Limits</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Efficient Resource Management with Kubernetes</a></li>
+    <li><a href="1setup.html">Setup</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/redhat-scholars/kubernetes-apps-resource-management/edit/main/documentation/modules/ROOT/pages/1setup.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Setup</h1>
+<div class="sect1">
+<h2 id="_ide"><a class="anchor" href="#_ide"></a>IDE</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can use any IDE for this tutorial but if you didn&#8217;t try it before, we recommend <a href="https://code.visualstudio.com/download" target="_blank" rel="noopener">VS Code</a> with the <a href="https://marketplace.visualstudio.com/items?itemName=redhat.java" target="_blank" rel="noopener">Language Support for Java&#8482; by Red Hat</a> and the <a href="https://marketplace.visualstudio.com/items?itemName=redhat.vscode-quarkus" target="_blank" rel="noopener">Quarkus</a> extensions.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_red_hat_openshift_development_cluster"><a class="anchor" href="#_red_hat_openshift_development_cluster"></a>Red Hat OpenShift development cluster</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>You can provision your own development environment at <a href="https://developers.redhat.com/developer-sandbox/get-started">https://developers.redhat.com/developer-sandbox/get-started</a>:</p>
+</div>
+<div class="imageblock text-center mt-4 center">
+<div class="content">
+<img src="_images/img.png" alt="Sandbox Image" width="400" height="400">
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="index.html">Efficient Resource Management with Kubernetes</a></span>
+  <span class="next"><a href="2starter.html">Starter Project</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>

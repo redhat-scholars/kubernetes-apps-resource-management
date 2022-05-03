@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Deploy to Kubernetes :: Efficient Resource Management with Kubernetes</title>
+    <link rel="canonical" href="https://redhat-scholars.github.io/kubernetes-apps-resource-management/main/3deploy.html">
+    <link rel="prev" href="2starter.html">
+    <link rel="next" href="4resources.html">
+    <meta name="generator" content="Antora 3.0.0">
+    <link rel="stylesheet" href="../../_/css/site.css">
+  </head>
+  <body class="article">
+<header class="header">
+  <nav class="navbar">
+    <div class="navbar-brand">
+      <a class="navbar-item" href="https://developers.redhat.com" target="_blank"><img src="../../_/img/NewRHDFullLogo_4-color_white-wordmark.png" height="40px" alt="Red Hat Developer Program"></a>
+      <a class="navbar-item" style="font-size: 24px; color: white" href="https://redhat-scholars.github.io">Efficient Resource Management with Kubernetes</a>
+      <button class="navbar-burger" data-target="topbar-nav">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+    <div id="topbar-nav" class="navbar-menu">
+      <div class="navbar-end">
+        <a class="navbar-item" href="https://developers.redhat.com/ebooks/" target="_blank">Books</a>
+        <a class="navbar-item" href="https://developers.redhat.com/cheatsheets/" target="_blank">Cheat Sheets</a>
+        <a class="navbar-item" href="https://developers.redhat.com/events/" target="_blank">Upcoming Events</a>
+        <div class="navbar-item has-dropdown is-hoverable">
+          <a class="navbar-link" href="#">More Tutorials</a>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/kubernetes-tutorial/" target="_blank">Kubernetes</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/istio-tutorial/" target="_blank">Istio</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/quarkus-tutorial/" target="_blank">Quarkus</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/knative-tutorial/" target="_blank">Knative</a>
+            <a class="navbar-item" href="https://redhat-developer-demos.github.io/tekton-tutorial/" target="_blank">Tekton</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
+<div class="body">
+<div class="nav-container" data-component="kubernetes-apps-resource-management" data-version="main">
+  <aside class="nav">
+    <div class="panels">
+<div class="nav-panel-menu is-active" data-panel="menu">
+  <nav class="nav-menu">
+    <h3 class="title"><a href="index.html"></a></h3>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="0">
+<ul class="nav-list">
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="1setup.html">Setup</a>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <a class="nav-link" href="2starter.html">Starter Project</a>
+  </li>
+  <li class="nav-item is-current-page" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="3deploy.html">Deploy</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#deploydb">Deploy Database</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#deployapp">Deploy Application</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#accessingservice">Accessing Application</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#deployhowto">Bonus Track: How to develop the app</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="4resources.html">Resource Quotas</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcediscovering">Discovering Resource Limits</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcejvmergonomics">JVM Ergonomics</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourceadjustcontainer">Adjusting Container Resources</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcefinal">Final Words</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="4resources.html#resourcehowto">Bonus Track: Setting Kubernetes values in Quarkus</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="5metrics.html">Tailor metrics</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="5metrics.html#metricsquarkus">Metrics in Quarkus</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="6monitoring.html">Observing Memory/CPU</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringrequestlimits">Understanding requests and limits</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringprometheus">Using Prometheus to size/update memory limits</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringovercommiting">Overcomiting</a>
+  </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="6monitoring.html#monitoringbonustrack">Bonus Track: Automatic Requests and Limits</a>
+  </li>
+</ul>
+  </li>
+</ul>
+  </li>
+</ul>
+  </nav>
+</div>
+    </div>
+  </aside>
+</div>
+<main class="article">
+<div class="toolbar" role="navigation">
+<button class="nav-toggle"></button>
+  <a href="index.html" class="home-link"></a>
+<nav class="breadcrumbs" aria-label="breadcrumbs">
+  <ul>
+    <li><a href="index.html">Efficient Resource Management with Kubernetes</a></li>
+    <li><a href="3deploy.html">Deploy</a></li>
+  </ul>
+</nav>
+  <div class="edit-this-page"><a href="https://github.com/redhat-scholars/kubernetes-apps-resource-management/edit/main/documentation/modules/ROOT/pages/3deploy.adoc">Edit this Page</a></div>
+  </div>
+  <div class="content">
+<article class="doc">
+<h1 class="page">Deploy to Kubernetes</h1>
+<div class="sect1">
+<h2 id="deploydb"><a class="anchor" href="#deploydb"></a>Deploy Database</h2>
+<div class="sectionbody">
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset1_developer-sandbox"></a>Developer Sandbox</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset1_developer-sandbox">
+<div class="paragraph">
+<p>In order to setup your production database in <a href="https://developers.redhat.com/developer-sandbox/get-started">Developer Sandbox</a>, please do the following steps:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>click on <code>+Add</code> from the left hand side menu</p>
+</li>
+<li>
+<p>select <code>Database</code> from <code>Developer Catalog</code> and afterwards <code>PostgreSQL (Ephemeral)</code></p>
+</li>
+</ul>
+</div>
+<div class="imageblock text-center mt-4 center">
+<div class="content">
+<img src="_images/postgresql.png" alt="Database" width="400" height="400">
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>click on <code>Instantiate template</code> button and fill in the following details:</p>
+</li>
+</ul>
+</div>
+<div class="imageblock text-center mt-4 center">
+<div class="content">
+<img src="_images/template.png" alt="Database" width="400" height="400">
+</div>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1">Namespace</dt>
+<dd>
+<p>openshift</p>
+</dd>
+<dt class="hdlist1">Database Service name</dt>
+<dd>
+<p>postgres</p>
+</dd>
+<dt class="hdlist1">PostgreSQL Connection Username</dt>
+<dd>
+<p>postgres</p>
+</dd>
+<dt class="hdlist1">PostgreSQL Connection Password</dt>
+<dd>
+<p>postgres</p>
+</dd>
+<dt class="hdlist1">PostgreSQL Database name</dt>
+<dd>
+<p>postgres</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p>Finally, click on <code>Create</code> button and wait until the database is up and running.</p>
+</div>
+<div class="imageblock text-center mt-4 center">
+<div class="content">
+<img src="_images/postgredeploy.png" alt="Database" width="400" height="400">
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deployapp"><a class="anchor" href="#deployapp"></a>Deploy the Application</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>We&#8217;ve provided a simple Kubernetes YAML file with everything set up, to deploy the Another Greeting Application.</p>
+</div>
+<div class="paragraph">
+<p>In the terminal window, run the following command:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f apps/kubefiles/deploy-another-greeting-app.yaml</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">service/another-greeting-app created
+deployment.apps/another-greeting-app created</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Check the resources are deployed correctly by running the follwoing commands:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get pods</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                                    READY   STATUS    RESTARTS      AGE
+another-greeting-app-79f8d45f58-5sbt6   1/1     Running   0             5m4s
+postgres-1-kwmqv                        1/1     Running   1 (10m ago)   10m</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The Pod should be Running and Ready after a few seconds.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get services</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                   TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+another-greeting-app   ClusterIP   172.30.129.129   &lt;none&gt;        80/TCP     19m
+postgres               ClusterIP   172.30.28.111    &lt;none&gt;        5432/TCP   20h</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="accessingservice"><a class="anchor" href="#accessingservice"></a>Accessing the Service</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The application is up and running, it&#8217;s time to initialize it, and then send some requests.</p>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset2_developer-sandbox"></a>Developer Sandbox</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset2_developer-sandbox">
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc expose svc another-greeting-app</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">route.route.openshift.io/another-greeting-app exposed</code></pre>
+</div>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get routes</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                   HOST/PORT                                                                  PATH   SERVICES               PORT   TERMINATION   WILDCARD
+another-greeting-app   another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com          another-greeting-app   http                 None</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>With the URL to access to the service (in this case <code>another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com</code>), let&#8217;s initialize the application.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com/messages/init</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">DB initialized</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And finally, let&#8217;s query the service to get all greeting messages:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com/messages</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[{"id":1,"content":"Hello","language":"en","country":"United Kingdom"},{"id":2,"content":"Hola","language":"es","country":"Spain"},{"id":3,"content":"Salut","language":"ro","country":"Romania"},{"id":4,"content":"Salut","language":"fr","country":"France"}]</code></pre>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_clean_up"><a class="anchor" href="#_clean_up"></a>Clean Up</h3>
+<div class="paragraph">
+<p>Undeploy the application by running the following command in a terminal window:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f apps/kubefiles/deploy-another-greeting-app.yaml</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="deployhowto"><a class="anchor" href="#deployhowto"></a>Bonus Track</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Let&#8217;s see how we&#8217;ve created the container images and Kubernetes resources used in this tutorial.</p>
+</div>
+<div class="paragraph">
+<p>You don&#8217;t need to do anything, we are explaining here in case you are curious.</p>
+</div>
+<div class="sect2">
+<h3 id="_adding_the_kubernetes_and_jib_extensions"><a class="anchor" href="#_adding_the_kubernetes_and_jib_extensions"></a>Adding the Kubernetes and Jib extensions</h3>
+<div class="paragraph">
+<p>You need a container registry that is accessible from your Kubernetes cluster to deploy the application container image in it.</p>
+</div>
+<div class="paragraph">
+<p>In this chapter we&#8217;ll be using the Quarkus Kubernetes Extension to create the Kubernetes deployment file, and the Quarkus Jib Extension to create and push the container image to your container registry without the need of running local docker daemon.</p>
+</div>
+<div class="sect3">
+<h4 id="_adding_the_configuration_properties"><a class="anchor" href="#_adding_the_configuration_properties"></a>Adding the configuration properties</h4>
+<div class="paragraph">
+<p>Add the following properties to your <code>application.properties</code> so that can push the container to correct location:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties"># Configuration file
+# key = value
+#quarkus.container-image.push=true <i class="conum" data-value="1"></i><b>(1)</b>
+
+quarkus.container-image.registry=quay.io<i class="conum" data-value="2"></i><b>(2)</b>
+quarkus.container-image.group=myrepo<i class="conum" data-value="3"></i><b>(3)</b>
+quarkus.container-image.name=greeting-app<i class="conum" data-value="4"></i><b>(4)</b>
+quarkus.container-image.tag=1.0-SNAPSHOT<i class="conum" data-value="5"></i><b>(5)</b>
+
+#quarkus.kubernetes.deploy=true
+quarkus.openshift.route.expose=true<i class="conum" data-value="6"></i><b>(6)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Push the image automatically when application is packaged.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Registry where image is pushed. By default is docker hub.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Group name of the conatiner image.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Container name. By default is the <code>artifactId</code> element of <code>pom.xml</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Tag of the container image. By default is the <code>version</code> element of <code>pom.xml</code>.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Ask for OpenShift route configuration as well when the application is deployed.</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Change <code>quay.io</code> to your container registry and <code>myrepo</code> to your organization.
+If you don&#8217;t, your push <strong>will</strong> fail.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_authenticating_and_pushing_the_image_to_your_container_registry"><a class="anchor" href="#_authenticating_and_pushing_the_image_to_your_container_registry"></a>Authenticating and pushing the image to your container registry</h4>
+<div class="paragraph">
+<p>In order to push the container image, you need to authenticate to your container registry:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">docker login quay.io</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now create and push your container image using jib:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw clean package -Dquarkus.container-image.push=true</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">[INFO] [io.quarkus.container.image.jib.deployment.JibProcessor] Using base image with digest: sha256:b459cc59d6c7ddc9fd52f981fc4c187f44a401f2433a1b4110810d2dd9e98a07
+[INFO] [io.quarkus.container.image.jib.deployment.JibProcessor] Container entrypoint set to [java, -Dquarkus.http.host=0.0.0.0, -Djava.util.logging.manager=org.jboss.logmanager.LogManager, -cp, /app/resources:/app/classes:/app/libs/*, io.quarkus.runner.GeneratedMain]
+[INFO] [io.quarkus.container.image.jib.deployment.JibProcessor] Pushed container image quay.io/myrepo/tutorial-app:1.0-SNAPSHOT (sha256:6651a2f85f8f53ef951b3398d00f1c7da73bd0e8b21f87584d5a1c0e99aae12c)
+
+[INFO] [io.quarkus.deployment.QuarkusAugmentor] Quarkus augmentation completed in 14804ms
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD SUCCESS
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  20.431 s
+[INFO] Finished at: 2020-05-11T00:05:25-04:00
+[INFO] ------------------------------------------------------------------------</code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_deploy_your_application_to_your_kubernetes_cluster"><a class="anchor" href="#_deploy_your_application_to_your_kubernetes_cluster"></a>Deploy your application to your Kubernetes cluster</h3>
+<div class="paragraph">
+<p>When OpenShift extension is present in the classpath, a OpenShift deployment file is scaffolded for you during package phase.</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubrectl apply -f target/kubernetes/kubernetes.yml</code></pre>
+</div>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-text hljs" data-lang="text">service/greeting-app configured
+imagestream.image.openshift.io/greeting-app configured
+deploymentconfig.apps.openshift.io/greeting-app configured
+route.route.openshift.io/greeting-app configured</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You might need to wait for some seconds until your application is up and running.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can build, push and deploy the container image by running: <code>./mvnw clean package -Dquarkus.kubernetes.deploy=true</code>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<nav class="pagination">
+  <span class="prev"><a href="2starter.html">Starter Project</a></span>
+  <span class="next"><a href="4resources.html">Resource Quotas</a></span>
+</nav>
+</article>
+<aside class="toc sidebar" data-title="Contents" data-levels="2">
+  <div class="toc-menu"></div>
+</aside>
+  </div>
+</main>
+</div>
+<footer class="footer">
+  <a class="rhd-logo" href="https://developers.redhat.com" target="_blank"></div>
+</footer>
+<script src="../../_/js/vendor/clipboard.js"></script>
+<script src="../../_/js/site.js"></script>
+<script async src="../../_/js/vendor/highlight.js"></script>
+  </body>
+</html>
