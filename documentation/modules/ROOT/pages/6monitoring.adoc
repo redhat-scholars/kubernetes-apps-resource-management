@@ -1,4 +1,4 @@
-= Sizing the Kubernetes resource limits
+= Observing Memory/CPU
 
 At this point, you've learned why setting limits is important and a first approach to setting these values correctly.
 
@@ -6,6 +6,7 @@ But these are only the initial values; when the service is running, you need to 
 
 Let's see how Prometheus can help us detect incorrect limits or set these values in services that have been running for a long time without any limitation.
 
+[#monitoringrequestlimits]
 == Understanding requests and limits with examples
 
 It's important to understand how Kubernetes behave when `request` or `limit` values are exceeded.
@@ -291,6 +292,7 @@ Run the following command to undeploy current namespace:
 kubectl delete all --all
 ----
 
+[#monitoringprometheus]
 == Using Prometheus to size/update memory limits
 
 Let's see how Prometheus can help us detect incorrect limits or set these values in services running for a long time without any limitation.
@@ -444,6 +446,7 @@ The `memconsume-2` consumed a max of 319Mb in its lifetime while `memconsume` ju
 
 With this data in mind, containers won’t run out of resources.
 
+[#monitoringovercommiting]
 == Overcommiting
 
 We've seen in the <<Overcommitment of memory>> section that you can set as much as limit as you want and the container will still be deployable.
@@ -488,7 +491,8 @@ Run the following command to undeploy current namespace:
 kubectl delete all --all
 ----
 
-== Automatic Requests and Limits
+[#monitoringbonustrack]
+== Bonus Track: Automatic Requests and Limits
 
 But there is another way to calculate `requests` and `limits`. 
 And that's using the Virtual Pod Autoscaler.

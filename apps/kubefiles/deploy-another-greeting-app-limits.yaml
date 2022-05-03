@@ -1,0 +1,88 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: 57ec12ccd6cda13fcdbc788254ab504e53620306
+    app.quarkus.io/build-timestamp: 2022-04-29 - 11:03:42 +0000
+  labels:
+    app.kubernetes.io/name: another-greeting-app
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  name: another-greeting-app
+spec:
+  ports:
+    - name: http
+      port: 80
+      targetPort: 8080
+  selector:
+    app.kubernetes.io/name: another-greeting-app
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  type: ClusterIP
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: 57ec12ccd6cda13fcdbc788254ab504e53620306
+    app.quarkus.io/build-timestamp: 2022-04-29 - 11:03:42 +0000
+  labels:
+    app.kubernetes.io/name: another-greeting-app
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  name: another-greeting-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: another-greeting-app
+      app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  template:
+    metadata:
+      annotations:
+        app.quarkus.io/commit-id: 57ec12ccd6cda13fcdbc788254ab504e53620306
+        app.quarkus.io/build-timestamp: 2022-04-29 - 11:03:42 +0000
+      labels:
+        app.kubernetes.io/name: another-greeting-app
+        app.kubernetes.io/version: 1.0.0-SNAPSHOT
+    spec:
+      containers:
+        - env:
+            - name: KUBERNETES_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: JDK_JAVA_OPTIONS
+              value: "-XshowSettings:system -Xlog:gc=info -Xlog:os+container=info"
+          image: quay.io/rhdevelopers/another-greeting-app:1.0.0-SNAPSHOT
+          imagePullPolicy: Always
+          livenessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /q/health/live
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+          name: another-greeting-app
+          ports:
+            - containerPort: 8080
+              name: http
+              protocol: TCP
+          readinessProbe:
+            failureThreshold: 3
+            httpGet:
+              path: /q/health/ready
+              port: 8080
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 30
+            successThreshold: 1
+            timeoutSeconds: 10
+          resources:
+            limits:
+              cpu: 200m
+              memory: 280Mi
+            requests:
+              cpu: 100m
+              memory: 280Mi

@@ -2,19 +2,19 @@ runtime:
   cache_dir: ./.cache/antora
 
 site:
-  title: Efficient Resource Management with OpenShift
+  title: Efficient Resource Management with Kubernetes
   url: https://redhat-scholars.github.io/
-  start_page: openshift-apps-resource-management::index.adoc
+  start_page: kubernetes-apps-resource-management::index.adoc
 
 content:
   sources:
-    - url: git@github.com:redhat-scholars/openshift-apps-resource-management.git
+    - url: git@github.com:redhat-scholars/kubernetes-apps-resource-management.git
       start_path: documentation
 
 asciidoc:
   attributes:
     experimental: true
-    release-version: master
+    release-version: main
     page-pagination: true
   extensions:
     - ./lib/tab-block.js

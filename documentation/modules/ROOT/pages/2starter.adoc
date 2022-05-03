@@ -1,0 +1,11 @@
+= Starter project
+
+To demonstrate the concepts in this tutorial, we will use a simple Java application developed in Quarkus that exposes its own REST API and persists data in a PostgreSQL database, as well as doing a request to an external service to update content of the database.
+
+In the following diagram you can see an overview of the application:
+
+image::efficient.png[]
+
+When the application is up and running, we call the `/messages/init` endpoint to populate the database content.
+
+Now that we've introduced the application, let's deploy it to a Kubernetes cluster.

@@ -1,0 +1,21 @@
+[[requirements]]
+= Setup
+include::_attributes.adoc[]
+
+== IDE
+
+You can use any IDE for this tutorial but if you didn't try it before, we recommend https://code.visualstudio.com/download[VS Code, window="_blank"] with the https://marketplace.visualstudio.com/items?itemName=redhat.java[Language Support for Java(TM) by Red Hat, window="_blank"] and the https://marketplace.visualstudio.com/items?itemName=redhat.vscode-quarkus[Quarkus, window="_blank"] extensions.
+
+== Red Hat OpenShift development cluster
+
+You can provision your own development environment at https://developers.redhat.com/developer-sandbox/get-started[https://developers.redhat.com/developer-sandbox/get-started]:
+
+[.mt-4.center]
+image::img.png[Sandbox Image,400,400,align="center"]
+
+
+// TODO login in terminal
+
+// TODO download oc
+
+// TODO download kubectl

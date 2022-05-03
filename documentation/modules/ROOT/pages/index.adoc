@@ -1,11 +1,11 @@
-= Welcome to Efficient Resource Management with OpenShift
+= Welcome to Efficient Resource Management with Kubernetes
 :page-layout: home
 :!sectids:
 
 [.text-center.strong]
 == Efficient Resource Management
 
-Let's explore best practices and useful settings to manage application’s resources in an OpenShift cluster. Since the load of cluster usage may increase rapidly due to traffic load and the amount of applications deployed, it's better to set up resource quotas to keep the workloads running smoothly.
+Let's explore best practices and useful settings to manage application’s resources in an Kubernetes cluster. Since the load of cluster usage may increase rapidly due to traffic load and the amount of applications deployed, it's better to set up resource quotas to keep the workloads running smoothly.
 
 [.mt-4.center]
 image::os-overview-image.png[OpenShift Overview Image,400,400,align="center"]

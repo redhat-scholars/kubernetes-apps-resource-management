@@ -1,0 +1,442 @@
+= Resource quotas
+
+By default, containers run with unbounded compute resources on a Kubernetes cluster. 
+Developer Sandbox is managed OpenShift environment, its cluster resources are tailored per development needs.
+
+[#resourcediscovering]
+== Discovering project resource limits
+
+With resource quotas, cluster administrators can restrict resource consumption and creation on a namespace basis.
+
+There will always be concerns that one Pod or Container could monopolize all available resources.
+
+To avoid that, within a namespace, a Pod or Container can consume as much CPU and memory as defined by the `namespace's/project's` resource quota.
+
+To discover the resource quota established for your namespace/project you can run the following command:
+
+[.console-input]
+[source,bash]
+----
+kubectl get resourcequota
+----
+
+At namespace/project level a LimitRange policy is employed to constrain resource allocations (to Pods or Containers).
+
+You can find out the LimitRange established for a namespace by running `kubectl get limitrange` and ask for its description.
+In the case of RedHat Developer Sandbox these numbers are the following ones:
+
+[.console-input]
+[source,bash]
+----
+kubectl describe limitrange resource-limits
+----
+
+The output should be something similar to:
+
+[.console-output]
+[source,text]
+----
+Name:       resource-limits
+Namespace:  anasandbox-dev
+Type        Resource  Min  Max  Default Request  Default Limit  Max Limit/Request Ratio
+----        --------  ---  ---  ---------------  -------------  -----------------------
+Container   cpu       -    -    10m              1              -
+Container   memory    -    -    64Mi             750Mi          -
+----
+
+The above LimitRange has enforced the default request/limit for compute resources in the namespace and automatically injects them to Containers at runtime.
+
+So, any deployment done without specifying any `request` or `limit`, like we did in the previous section, will use these default parameters.
+
+Run the following request to get the parameters used by the JVM, changing the hostname with yours:
+
+[.console-input]
+[source,bash]
+----
+curl another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com/messages/sysresources
+----
+
+[.console-output]
+[source,bash]
+----
+Memory: 181 Cores: 1
+----
+
+So if the memory limit is set to 750Mi, why JVM uses only 181Mi?
+This is because of JVM default ergonomics that we'll see in the following section.
+
+[#resourcejvmergonomics]
+== JVM ergonomics
+
+The JVM has some defaults to determine the number of processors based on CPU quota, and the amount of memory used as heap memory. 
+
+These parameters will determine the the garbage collector (GC) algorithm and the performance of the application.
+
+=== Default Values
+
+The JVM comes with default memory value as starting point if it isn't set manually.
+
+This value is relative to the total amount of memory available to the container and it's *1/4* of its value.
+
+Now, we can see why the memory available when we queried `/sysresources` the available memory was 181. 
+The total memory available in the Pod is `750Mi`, and 1/4 of this memory is `187` which is similar value we got in the application.
+
+Also, JVM uses a default Garbage Collector implementation depending on 
+
+.Default GC algorithms
+|===
+|Resources available |GC algorithm
+
+|Fewer than two CPUs and less than 2GB of memory
+|Serial algorithm
+
+|>= 2 CPU's and >=2GB of memory
+|G1GC
+|===
+
+The algorith can be overriden, for example starting the application with `-XX:+UseG1GC` to force the usage of `G1C1` algorithm.
+
+To know exactly which values are used, you can start the JVM with the following commands:
+
+`-XshowSettings:system`:: Shows system settings detected/set by JVM.
+
+`-Xlog:gc=info`:: Shows information about GC (i.e which algortihm is used)
+
+`-Xlog:os+container=trace`:: These traces print whether or not container detection is actually working and what values the JVM is determining to be in place by inspecting the cgroup pseudo filesystem of a deployed application.
+
+In the terminal window, run the following command to deploy the same service as before but with `-XshowSettings:system -Xlog:gc=info -Xlog:os+container=info` flags set:
+
+[.console-input]
+[source,bash]
+----
+kubectl apply -f apps/kubefiles/deploy-another-greeting-app-show-prop.yaml
+----
+
+[.console-output]
+[source,bash]
+----
+service/another-greeting-app created
+deployment.apps/another-greeting-app created
+----
+
+Check the resources are deployed correctly by running the follwoing commands:
+
+[.console-input]
+[source,bash]
+----
+kubectl get pods
+----
+
+[.console-output]
+[source,bash]
+----
+NAME                                    READY   STATUS    RESTARTS      AGE
+another-greeting-app-79f8d45f58-5sbt6   1/1     Running   0             5m4s
+postgres-1-kwmqv                        1/1     Running   1 (10m ago)   10m
+----
+
+The Pod should be Running and Ready after a few seconds.
+
+Then show the log of the Pod to see the defaults used:
+
+[.console-input]
+[source,bash]
+----
+kubectl logs another-greeting-app-79f8d45f58-5sbt6
+----
+
+[.console-output]
+[source,bash]
+----
+[0.001s][info][os,container] Memory Limit is: 786432000 // <1>
+[0.005s][info][gc          ] Using Serial // <2>
+Operating System Metrics:
+    Provider: cgroupv1 // <3>
+    Effective CPU Count: 1 // <4>
+    CPU Period: 100000us
+    CPU Quota: 100000us
+    CPU Shares: 10us
+    List of Processors, 8 total:
+    0 1 2 3 4 5 6 7
+    List of Effective Processors, 8 total:
+    0 1 2 3 4 5 6 7
+    List of Memory Nodes, 1 total:
+    0
+    List of Available Memory Nodes, 1 total:
+    0
+    Memory Limit: 750.00M
+    Memory Soft Limit: Unlimited
+    Memory & Swap Limit: 750.00M
+
+[0.192s][info][gc          ] GC(0) Pause Young (Allocation Failure) 3M->1M(11M) 3.738ms
+[0.493s][info][gc          ] GC(1) Pause Young (Allocation Failure) 4M->1M(11M) 4.735ms
+[0.695s][info][gc          ] GC(2) Pause Young (Allocation Failure) 5M->2M(11M) 2.472ms
+[0.870s][info][gc          ] GC(3) Pause Young (Allocation Failure) 5M->2M(11M) 1.575ms
+[0.921s][info][gc          ] GC(4) Pause Young (Allocation Failure) 5M->3M(11M) 1.439ms
+[1.005s][info][gc          ] GC(5) Pause Young (Allocation Failure) 6M->4M(11M) 2.502ms
+[1.104s][info][gc          ] GC(6) Pause Young (Allocation Failure) 7M->4M(11M) 1.454ms
+[1.202s][info][gc          ] GC(7) Pause Young (Allocation Failure) 7M->4M(11M) 1.296ms
+[1.297s][info][gc          ] GC(8) Pause Young (Allocation Failure) 8M->5M(11M) 1.569ms
+[1.402s][info][gc          ] GC(9) Pause Young (Allocation Failure) 8M->5M(11M) 1.421ms
+[1.491s][info][gc          ] GC(10) Pause Young (Allocation Failure) 8M->5M(11M) 1.730ms
+[1.579s][info][gc          ] GC(11) Pause Young (Allocation Failure) 8M->6M(11M) 2.234ms
+[1.618s][info][gc          ] GC(12) Pause Young (Allocation Failure) 9M->6M(11M) 1.305ms
+[1.784s][info][gc          ] GC(13) Pause Young (Allocation Failure) 9M->6M(11M) 1.560ms
+...
+----
+<1> Using total amount of memory available in the node
+<2> Using GC serial as tehre is only one CPU available
+<3> Uses CGroups v1
+<4> Only 1 CPU is available
+
+=== Clean Up
+
+[.console-input]
+[source,bash]
+----
+kubectl delete -f apps/kubefiles/deploy-another-greeting-app-show-prop.yaml
+----
+
+[#resourceadjustcontainer]
+== Adjusting container resources
+
+Adjusting resources depends a lot on the kind of application you are developing, if it's an enterprise application or a stateless service.
+In this section we're going to explore how to adjust correctly this greeting application, and provide some generic information to be used for any Java application.
+
+Deploy the application again:
+
+In the terminal window, run the following command:
+
+[.console-input]
+[source,bash]
+----
+kubectl apply -f apps/kubefiles/deploy-another-greeting-app.yaml
+----
+
+include::partial$exposing.adoc[]
+
+At this point, we can do two things to adjust the limits: 
+
+=== Simulating traffic
+
+By using a tool called https://github.com/rakyll/hey[hey], you can run a load test on your server and see how your system performs under different circumstances.
+
+Let's run a hey command against the route exposed by previous deployment:
+
+[.console-input]
+[source,bash]
+----
+export ROUTE_URL=http://$(kubectl get route anpther-greeting-app -o jsonpath='{.spec.host}')
+curl $ROUTE_URL/messages/init
+hey -n 10 -c 4 -v $ROUTE_URL/messages
+----
+
+In the Developer Sandbox click on `Observe` and select the `Metric` tab. 
+You can select CPU Usage or Memory Usage query to check the resources consumed by each of your pods:
+
+[.mt-4.center]
+image::cpu_usage.png[CPU Usage,600,600,align="center"]
+
+[.mt-4.center]
+image::memory_usage.png[Memory Usage,600,600,align="center"]
+
+Based on that you can adjust the limits in the Kubernetes resources:
+
+[source, yaml]
+----
+resources:
+    limits:
+        cpu: 200m
+        memory: 280Mi
+    requests:
+        cpu: 100m
+        memory: 280Mi
+----
+
+[.console-input]
+[source,bash]
+----
+kubectl apply -f apps/kubefiles/deploy-another-greeting-app-limits.yaml
+----
+
+Check the resources are deployed correctly by running the follwoing commands:
+
+[.console-input]
+[source,bash]
+----
+kubectl get pods
+----
+
+[.console-output]
+[source,bash]
+----
+NAME                                    READY   STATUS    RESTARTS      AGE
+another-greeting-app-79f8d45f58-5sbt6   1/1     Running   0             5m4s
+postgres-1-kwmqv                        1/1     Running   1 (10m ago)   10m
+----
+
+The Pod should be Running and Ready after a few seconds.
+
+Then show the log of the Pod to see the defaults used:
+
+[.console-input]
+[source,bash]
+----
+kubectl logs another-greeting-app-79f8d45f58-5sbt6
+----
+
+[.console-output]
+[source,bash]
+----
+[0.040s][info][os,container] Memory Limit is: 293601280
+[0.045s][info][gc          ] Using Serial
+Operating System Metrics:
+    Provider: cgroupv1
+    Effective CPU Count: 1
+    CPU Period: 100000us
+    CPU Quota: 20000us
+    CPU Shares: 102us
+    List of Processors, 8 total:
+    0 1 2 3 4 5 6 7
+    List of Effective Processors, 8 total:
+    0 1 2 3 4 5 6 7
+    List of Memory Nodes, 1 total:
+    0
+    List of Available Memory Nodes, 1 total:
+    0
+    Memory Limit: 280.00M // <1>
+    Memory Soft Limit: Unlimited
+    Memory & Swap Limit: 280.00M
+----
+<1> Memory limit is updated
+
+Run the following request to get the parameters used by the JVM, changing the hostname with yours:
+
+[.console-input]
+[source,bash]
+----
+curl $ROUTE_URL/messages/sysresources
+----
+
+[.console-output]
+[source,bash]
+----
+Memory: 121 Cores: 1
+----
+
+The memory is adjusted to the new limits which is around the 25% of memory available. 
+
+The container memory is not only used for allocating the JVM heap memory, but also for the JVM itself and the container.
+For this reason, a good rule of thumb is to not allocate more than 75% of container memory as heap.
+
+The `-XX:MaxRAMPercentage` flag let you set the JVM heap size dynamically using a percentage of the total avalable memory (`-XX:MaxRAMPercentage=75`).
+
+Undeploy the previous application and deploy one setting the max heap memory to 75%.
+
+[.console-input]
+[source,bash]
+----
+kubectl delete -f apps/kubefiles/deploy-another-greeting-app-limits.yaml
+
+kubectl apply -f apps/kubefiles/deploy-another-greeting-app-75.yaml
+----
+
+Check the resources are deployed correctly by running the follwoing commands:
+
+[.console-input]
+[source,bash]
+----
+kubectl get pods
+----
+
+[.console-output]
+[source,bash]
+----
+NAME                                    READY   STATUS    RESTARTS      AGE
+another-greeting-app-79f8d45f58-5sbt6   1/1     Running   0             5m4s
+postgres-1-kwmqv                        1/1     Running   1 (10m ago)   10m
+----
+
+The Pod should be Running and Ready after a few seconds.
+
+Run the following request to get the parameters used by the JVM, changing the hostname with yours:
+
+[.console-input]
+[source,bash]
+----
+curl $ROUTE_URL/messages/sysresources
+----
+
+[.console-output]
+[source,bash]
+----
+Memory: 203 Cores: 1
+----
+
+Now the application is using 75% of memory as heap.
+
+=== Assuming some defaults
+
+Another option is assuming some defaults that might work in most applications and monitor and adjust accordantly.
+
+A good starting point for an application of medium size application with creation of object, and high concurrency is:
+
+vCPUs:: 2
+Memory:: 4Gb
+GC:: Parallel GC
+
+[#resourcefinal]
+== Final Words
+
+Final numbers and tip & tricks that can help you on defining good numbers on the Kubernetes deployment files.
+
+=== Limits and Requests
+
+*CPU* limits and requests must have the same value as the JVM reads the number of processors available only during startup time.
+
+*Memory* limits is the container memory, so you need to count not only the the JVM heap memory but all the memory required by the container.
+We encourage you in JVM applications to set request and limit value to the same value.
+
+=== How about GC
+
+Setting the GC configuration is also important when deploying Java application in a container.
+
+There are several studies suggesting the initial heap size and maximum heap size to the same value. Use the `-XX:InitialRAMPercentage` flag to set the initial value too.
+
+To determine which GC to use depends on the amount of CPU and memory you assign to the container:
+
+Serial GC:: 1 CPU
+
+ParallelGC:: 2 CPU < 4Gb
+
+G1GC or ShenandoahGC:: 2 CPU > 4Gb
+
+ZGC:: 2 CPU > 28Gb
+
+== Clean Up
+
+Undeploy the application:
+
+[.console-input]
+[source,bash]
+----
+kubectl delete -f apps/kubefiles/deploy-another-greeting-app-75.yaml
+----
+
+[#resourehowto]
+== Bonus Track
+
+Quarkus Kubernetes extension generates automatically Kubernetes resources.
+You can change the `requests` and `limits` in the `application.properties` file with the following properties:
+
+[.console-input]
+[source,properties]
+----
+# Configuration file
+# key = value
+
+quarkus.openshift.resources.limits.cpu=200m
+quarkus.openshift.resources.limits.memory=280Mi
+quarkus.openshift.resources.requests.cpu=100m
+quarkus.openshift.resources.requests.memory=140Mi
+----

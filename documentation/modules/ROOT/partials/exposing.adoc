@@ -1,0 +1,61 @@
+The application is up and running, it's time to initialize it, and then send some requests.
+
+[tabs, subs="attributes+,+macros"]
+====
+Developer Sandbox::
++
+--
+[.console-input]
+[source,bash]
+----
+oc expose svc another-greeting-app
+----
+
+[.console-output]
+[source,bash]
+----
+route.route.openshift.io/another-greeting-app exposed
+----
+
+[.console-input]
+[source,bash]
+----
+kubectl get routes
+----
+
+[.console-output]
+[source,bash]
+----
+NAME                   HOST/PORT                                                                  PATH   SERVICES               PORT   TERMINATION   WILDCARD
+another-greeting-app   another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com          another-greeting-app   http                 None
+----
+--
+====
+
+With the URL to access to the service (in this case `another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com`), let's initialize the application.
+
+[.console-input]
+[source,bash]
+----
+curl another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com/messages/init
+----
+
+[.console-output]
+[source,bash]
+----
+DB initialized
+----
+
+And finally, let's query the service to get all greeting messages:
+
+[.console-input]
+[source,bash]
+----
+curl another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com/messages
+----
+
+[.console-output]
+[source,json]
+----
+[{"id":1,"content":"Hello","language":"en","country":"United Kingdom"},{"id":2,"content":"Hola","language":"es","country":"Spain"},{"id":3,"content":"Salut","language":"ro","country":"Romania"},{"id":4,"content":"Salut","language":"fr","country":"France"}]
+----

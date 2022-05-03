@@ -1,7 +1,22 @@
 = Tailor metrics
 
+One of the important things when defining limits is to monitor the applications in real time getting important metrics.
+
+To get the application, clone this repository and go to `apps/another-greeting-app`.
+
+[.console-input]
+[source,bash]
+----
+git clone https://github.com/redhat-scholars/kubernetes-apps-resource-management.git
+
+cd apps/another-greeting-app
+----
+
+[#metricsquarkus]
+== Metrics in Quarkus
+
 Firstly, let's add the micrometer extension to our setup.
-Please open a new terminal window, and make sure you’re at the root of your tutorial-app project, then run:
+In the terminal window run:
 
 [.console-input]
 [source,bash]
@@ -9,7 +24,7 @@ Please open a new terminal window, and make sure you’re at the root of your tu
 ./mvnw quarkus:add-extension -Dextensions="io.quarkus:quarkus-micrometer,quarkus-micrometer-registry-prometheus"
 ----
 
-== Configuration of common tags
+=== Configuration of common tags
 
 When deploying accross multiple projects/namespaces is always good to have an unified view over some application metrics.
 Let's define several common tags for the application, varying in value at deployment time:
@@ -78,7 +93,7 @@ public class CustomConfiguration {
 }
 ----
 
-== Metrics definition at endpoint level
+=== Metrics definition at endpoint level
 
 When looking to improve the performance of certain application features, is useful to have metrics defined at endpoint level as well.
 Let's modify `GreetingResource` with the following:
@@ -125,7 +140,7 @@ public class GreetingResource {
 <1> Measure expected long running requests with `@Timed` annotation.
 <2> Count the creation of resources with `@Counted` annotation.
 
-== Inspect the custom metrics
+=== Inspect the custom metrics
 
 Start the application in DevMode:
 
@@ -160,7 +175,7 @@ jvm_memory_max_bytes{area="nonheap",country="'Romania'",id="CodeHeap 'non-profil
 http_get_requests_total{class="com.redhat.developers.GreetingResource",country="'Romania'",exception="none",method="findAll",profile="prod",region="CEE",result="success",uri="api.greet",} 3.0
 ----
 
-== Deploy to OpenShift
+=== Deploy to Kubernetes
 
 You can deploy your latest code changes by using the command:
 
@@ -176,7 +191,7 @@ Firstly, let's create a configmap:
 [.console-input]
 [source,bash]
 ----
-oc create cm country-nl --from-literal=region=Europe --from-literal=country=Netherlands
+kubectl create cm country-nl --from-literal=region=Europe --from-literal=country=Netherlands
 ----
 
 And we can append this new resource to our existing deployment:
@@ -184,14 +199,14 @@ And we can append this new resource to our existing deployment:
 [.console-input]
 [source,bash]
 ----
-oc set env --from=configmap/country-nl dc/greeting-app
+kubectl set env --from=configmap/country-nl dc/greeting-app
 ----
 
 Rollout the latest `DeploymentConfig` using:
 [.console-input]
 [source,bash]
 ----
-oc rollout latest dc/greeting-app
+kubectl rollout latest dc/greeting-app
 ----
 
 You can now check your overwritten metrics via:
@@ -201,4 +216,3 @@ You can now check your overwritten metrics via:
 ----
 curl $ROUTE_URL/q/metrics
 ----
-

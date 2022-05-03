@@ -1,6 +1,6 @@
-name: openshift-apps-resource-management
-title:  Efficient Resource Management with OpenShift
-version: master
+name: kubernetes-apps-resource-management
+title:  Efficient Resource Management with Kubernetes
+version: main
 nav:
   - modules/ROOT/nav.adoc
 start_page: ROOT:index.adoc
