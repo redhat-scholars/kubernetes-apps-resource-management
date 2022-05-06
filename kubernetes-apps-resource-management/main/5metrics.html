@@ -103,6 +103,9 @@
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#metricsquarkus">Metrics in Quarkus</a>
   </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="#metricsprometheus">Inspect metrics in Prometheus</a>
+  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
@@ -120,6 +123,15 @@
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="6monitoring.html#monitoringbonustrack">Bonus Track: Automatic Requests and Limits</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="7critical.html">Bonus:Protecting Critical Deployments</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="7critical.html#kube-integration-tests">Integration tests to avoid Kubernetes YAML issues</a>
   </li>
 </ul>
   </li>
@@ -149,8 +161,15 @@
 <div id="preamble">
 <div class="sectionbody">
 <div class="paragraph">
-<p>One of the important things when defining limits is to monitor the applications in real time getting important metrics.</p>
+<p>When building distributed systems, you should use metrics to ensure that you see all your requests, including errors or slow requests etc.
+Tracing helps you with following the evolution of a transaction and it usually needs to be sampled at high volumes of traffic
+(because the amount of data increases proportionally to the traffic volume).</p>
 </div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_setup"><a class="anchor" href="#_setup"></a>Setup</h2>
+<div class="sectionbody">
 <div class="paragraph">
 <p>To get the application, clone this repository and go to <code>apps/another-greeting-app</code>.</p>
 </div>
@@ -159,6 +178,56 @@
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">git clone https://github.com/redhat-scholars/kubernetes-apps-resource-management.git
 
 cd apps/another-greeting-app</code></pre>
+</div>
+</div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset1_developer-sandbox"></a>Developer Sandbox</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset1_developer-sandbox">
+<div class="paragraph">
+<p>As we will need to correlate our metrics and traces, we should make a setup for Prometheus.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+This setup has development purposes and is due to resource constraints that exist within Red Hat OpenShift Developer Sandbox.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>First, open the Web Terminal of your Sandbox and type the command:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl -O "https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-respource-management/master/apps/kubefiles/{prometheus-configmap.yaml,prometheus-deployment.yaml}"</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will download the files used to configure Jaeger/Prometheus/OpenTelemetry collector.</p>
+</div>
+<div class="paragraph">
+<p>Next, please run the following commands in the same terminal:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f prometheus-configmap.yaml
+oc new-app --docker-image=quay.io/prometheus/prometheus:latest
+kubectl replace -f prometheus-deployment.yaml
+oc expose svc prometheus</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -170,9 +239,32 @@ cd apps/another-greeting-app</code></pre>
 <p>Firstly, let&#8217;s add the micrometer extension to our setup.
 In the terminal window run:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset2_mac"></a>Mac</p>
+</li>
+<li>
+<p><a id="tabset2_windows"></a>Windows</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset2_mac">
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw quarkus:add-extension -Dextensions="io.quarkus:quarkus-micrometer,quarkus-micrometer-registry-prometheus"</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw quarkus:add-extension -Dextensions="io.quarkus:quarkus-micrometer-registry-prometheus"</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_windows">
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvnw.cmd quarkus:add-extension -Dextensions="io.quarkus:quarkus-micrometer-registry-prometheus"</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="sect2">
@@ -204,7 +296,7 @@ interface GlobalTagsConfig {
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">global.region=${REGION:CEE} <i class="conum" data-value="1"></i><b>(1)</b>
-global.country=${COUNTRY:'Romania'}</code></pre>
+global.country=${COUNTRY:Romania}</code></pre>
 </div>
 </div>
 <div class="colist arabic">
@@ -254,43 +346,144 @@ public class CustomConfiguration {
 <div class="sect2">
 <h3 id="_metrics_definition_at_endpoint_level"><a class="anchor" href="#_metrics_definition_at_endpoint_level"></a>Metrics definition at endpoint level</h3>
 <div class="paragraph">
-<p>When looking to improve the performance of certain application features, is useful to have metrics defined at endpoint level as well.
+<p>When looking to improve the performance of certain application features, is useful to have metrics defined at endpoint level as well.</p>
+</div>
+<div class="paragraph">
+<p>In <code>application.properties</code> please add the following configurations:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">quarkus.micrometer.binder.http-client.enabled=true<i class="conum" data-value="1"></i><b>(1)</b>
+quarkus.micrometer.binder.http-server.enabled=true<i class="conum" data-value="2"></i><b>(2)</b>
+quarkus.micrometer.binder.system=true<i class="conum" data-value="3"></i><b>(3)</b>
+quarkus.micrometer.export.prometheus.enabled=true<i class="conum" data-value="4"></i><b>(4)</b>
+quarkus.micrometer.export.prometheus.path=/metrics<i class="conum" data-value="5"></i><b>(5)</b>
+quarkus.micrometer.binder.jvm=true<i class="conum" data-value="6"></i><b>(6)</b></code></pre>
+</div>
+</div>
+<div class="colist arabic">
+<table>
+<tr>
+<td><i class="conum" data-value="1"></i><b>1</b></td>
+<td>Outbound HTTP request metrics support.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="2"></i><b>2</b></td>
+<td>Inbound HTTP request metrics support.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="3"></i><b>3</b></td>
+<td>Micrometer System metrics support.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="4"></i><b>4</b></td>
+<td>Enable export of metrics to Prometheus.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="5"></i><b>5</b></td>
+<td>Customize the path where metrics are exposed.</td>
+</tr>
+<tr>
+<td><i class="conum" data-value="6"></i><b>6</b></td>
+<td>Micrometer JVM metrics support.</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Go to thehttp://localhost:8080/q/swagger-ui/#/Greeting%20Resource/get_messages[Swagger UI] and make several requests.</p>
+</div>
+<div class="paragraph">
+<p>Now go to <a href="http://localhost:8080/metrics">http://localhost:8080/metrics</a> and search for <code>http_server_requests_seconds summary</code>. You will observe that your requests were automatically measured and they also contain the global tags:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash"># TYPE http_server_requests_seconds summary
+http_server_requests_seconds_count{country="Romania",method="GET",outcome="SUCCESS",profile="dev",region="CEE ",status="200",uri="/messages",} 12.0
+http_server_requests_seconds_sum{country="Romania",method="GET",outcome="SUCCESS",profile="dev",region="CEE ",status="200",uri="/messages",} 2.058467696
+http_server_requests_seconds_count{country="Romania",method="GET",outcome="SUCCESS",profile="dev",region="CEE ",status="200",uri="/metrics",} 2.0
+http_server_requests_seconds_sum{country="Romania",method="GET",outcome="SUCCESS",profile="dev",region="CEE ",status="200",uri="/metrics",} 0.075653411</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The metrics listed will be exported to Prometheus and further queried over time.
+You can also define your own custom metrics, but please keep in mind the Out Of the Box ones as well.
 Let&#8217;s modify <code>GreetingResource</code> with the following:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-java hljs" data-lang="java">package com.redhat.developers;
 
+import javax.inject.Inject;
+import javax.transaction.Transactional;
+import javax.ws.rs.GET;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+
+import org.eclipse.microprofile.rest.client.inject.RestClient;
+import org.jboss.logging.Logger;
+import org.jboss.resteasy.reactive.RestResponse.Status;
+
+import java.util.List;
+
 import io.micrometer.core.annotation.Counted;
 import io.micrometer.core.annotation.Timed;
-
-import javax.transaction.Transactional;
-import javax.ws.rs.*;
-import javax.ws.rs.core.MediaType;
-import java.util.List;
 
 @Path("messages")
 public class GreetingResource {
 
+    @Inject
+    Logger LOGGER;
+
+    @RestClient
+    HelloService helloService;
+
     public static final String URI = "uri";
     public static final String API_GREET = "api.greet";
 
+    @Path("/init")
+    @GET
+    @Transactional
+    @Produces(MediaType.TEXT_PLAIN)
+    public Response init() {
+        LOGGER.debug("Updating the db from external service");
+        List&lt;Message&gt; messages = Message.findAll().list();
+        for (Message message : messages) {
+            String language = message.language;
+            message.update(helloService.getContent(language).hello, language);
+        }
+        LOGGER.debug("End update of the db ");
+
+        return Response.status(Status.CREATED).entity("DB initialized").build();
+
+    }
+
     @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    @Consumes(MediaType.APPLICATION_JSON)
     @Transactional
     @Timed(value = "greetings.creation", longTask = true, extraTags = {URI, API_GREET})<i class="conum" data-value="1"></i><b>(1)</b>
     public Message create(Message message) {
-        Message.persist(message);
-        return message;
+         Message.persist(message);
+         return message;
     }
 
     @GET
-    @Produces(MediaType.APPLICATION_JSON)
+    @Path("/sysresources")
+    @Produces(MediaType.TEXT_PLAIN)
+    public String getSystemResources() {
+        long memory = Runtime.getRuntime().maxMemory();
+        int cores = Runtime.getRuntime().availableProcessors();
+        return " Memory: " + (memory / 1024 / 1024) +
+                " Cores: " + cores + "\n";
+    }
+
+    @GET
     @Counted(value = "http.get.requests", extraTags = {URI, API_GREET})<i class="conum" data-value="2"></i><b>(2)</b>
     public List&lt;Message&gt; findAll() {
         return Message.findAll().list();
     }
+
 
 }</code></pre>
 </div>
@@ -303,7 +496,7 @@ public class GreetingResource {
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Count the creation of resources with <code>@Counted</code> annotation.</td>
+<td>Count the creation of resources with <code>@Counted</code> annotation and your own extra tags.</td>
 </tr>
 </table>
 </div>
@@ -327,21 +520,21 @@ public class GreetingResource {
 </div>
 </div>
 <div class="paragraph">
-<p>You can see your custom metrics recorded at <a href="http://localhost:8080/q/metrics" class="bare">http://localhost:8080/q/metrics</a> :</p>
+<p>You can see your custom metrics recorded at <a href="http://localhost:8080/metrics" class="bare">http://localhost:8080/metrics</a> :</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">jvm_memory_max_bytes{area="heap",country="'Romania'",id="Survivor Space",profile="prod",region="CEE",} 4390912.0
-jvm_memory_max_bytes{area="heap",country="'Romania'",id="Eden Space",profile="prod",region="CEE",} 3.5258368E7
-jvm_memory_max_bytes{area="heap",country="'Romania'",id="Tenured Gen",profile="prod",region="CEE",} 8.8080384E7
-jvm_memory_max_bytes{area="nonheap",country="'Romania'",id="CodeHeap 'profiled nmethods'",profile="prod",region="CEE",} 1.22912768E8
-jvm_memory_max_bytes{area="nonheap",country="'Romania'",id="Compressed Class Space",profile="prod",region="CEE",} 1.073741824E9
-jvm_memory_max_bytes{area="nonheap",country="'Romania'",id="Metaspace",profile="prod",region="CEE",} -1.0
-jvm_memory_max_bytes{area="nonheap",country="'Romania'",id="CodeHeap 'non-nmethods'",profile="prod",region="CEE",} 5828608.0
-jvm_memory_max_bytes{area="nonheap",country="'Romania'",id="CodeHeap 'non-profiled nmethods'",profile="prod",region="CEE",} 1.22916864E8
+<pre class="highlightjs highlight"><code class="language-properties hljs" data-lang="properties">jvm_memory_max_bytes{area="heap",country="Romania",id="Survivor Space",profile="prod",region="CEE",} 4390912.0
+jvm_memory_max_bytes{area="heap",country="Romania",id="Eden Space",profile="prod",region="CEE",} 3.5258368E7
+jvm_memory_max_bytes{area="heap",country="Romania",id="Tenured Gen",profile="prod",region="CEE",} 8.8080384E7
+jvm_memory_max_bytes{area="nonheap",country="Romania",id="CodeHeap 'profiled nmethods'",profile="prod",region="CEE",} 1.22912768E8
+jvm_memory_max_bytes{area="nonheap",country="Romania",id="Compressed Class Space",profile="prod",region="CEE",} 1.073741824E9
+jvm_memory_max_bytes{area="nonheap",country="Romania",id="Metaspace",profile="prod",region="CEE",} -1.0
+jvm_memory_max_bytes{area="nonheap",country="Romania",id="CodeHeap 'non-nmethods'",profile="prod",region="CEE",} 5828608.0
+jvm_memory_max_bytes{area="nonheap",country="Romania",id="CodeHeap 'non-profiled nmethods'",profile="prod",region="CEE",} 1.22916864E8
 # HELP http_get_requests_total
 # TYPE http_get_requests_total counter
-http_get_requests_total{class="com.redhat.developers.GreetingResource",country="'Romania'",exception="none",method="findAll",profile="prod",region="CEE",result="success",uri="api.greet",} 3.0</code></pre>
+http_get_requests_total{class="com.redhat.developers.GreetingResource",country="Romania",exception="none",method="findAll",profile="prod",region="CEE",result="success",uri="api.greet",} 3.0</code></pre>
 </div>
 </div>
 </div>
@@ -361,7 +554,7 @@ Firstly, let&#8217;s create a configmap:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create cm country-nl --from-literal=region=Europe --from-literal=country=Netherlands</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl create cm country-nl --from-literal=REGION=Europe --from-literal=COUNTRY=Netherlands</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -369,7 +562,7 @@ Firstly, let&#8217;s create a configmap:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl set env --from=configmap/country-nl dc/greeting-app</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl set env --from=configmap/country-nl deploy/another-greeting-app</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -377,7 +570,7 @@ Firstly, let&#8217;s create a configmap:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl rollout latest dc/greeting-app</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl rollout restart deploy/another-greeting-app</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -385,8 +578,51 @@ Firstly, let&#8217;s create a configmap:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl $ROUTE_URL/q/metrics</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl $ROUTE_URL/metrics</code></pre>
 </div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="metricsprometheus"><a class="anchor" href="#metricsprometheus"></a>Inspect metrics in Prometheus</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Find the route associated to your application (the one you used in <a href="#Kubernetes Advanced">[Kubernetes Advanced]</a>) using either the UI or the in-browser terminal:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export ROUTE_URL=http://$(kubectl get route another-greeting-app -o jsonpath='{.spec.host}')</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Let&#8217;s make a few curl requests:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">for i in {1..16}; do curl -v $ROUTE_URL/messages; done</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>When we made the setup of the project, we also exposed the Prometheus installation via a route.
+You can find that route using the following command and access Prometheus UI via it:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export PROMETHEUS_URL=http://$(kubectl get route prometheus -o jsonpath='{.spec.host}')</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In Prometheus UI enter the following PromQL query to see the average over time of requests to the <code>/messages</code> endpoint:</p>
+</div>
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">avg_over_time(http_server_requests_seconds_count{uri="/messages"}[1h])</code></pre>
+</div>
+</div>
+<div class="imageblock text-center mt-4 center">
+<div class="content">
+<img src="_images/promql_query.png" alt="PromQL query example" width="600" height="600">
 </div>
 </div>
 </div>

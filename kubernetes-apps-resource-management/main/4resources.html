@@ -103,6 +103,9 @@
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="5metrics.html#metricsquarkus">Metrics in Quarkus</a>
   </li>
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="5metrics.html#metricsprometheus">Inspect metrics in Prometheus</a>
+  </li>
 </ul>
   </li>
   <li class="nav-item" data-depth="1">
@@ -120,6 +123,15 @@
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="6monitoring.html#monitoringbonustrack">Bonus Track: Automatic Requests and Limits</a>
+  </li>
+</ul>
+  </li>
+  <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
+    <a class="nav-link" href="7critical.html">Bonus:Protecting Critical Deployments</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="7critical.html#kube-integration-tests">Integration tests to avoid Kubernetes YAML issues</a>
   </li>
 </ul>
   </li>
@@ -497,7 +509,7 @@ another-greeting-app   another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.op
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export ROUTE_URL=http://$(kubectl get route anpther-greeting-app -o jsonpath='{.spec.host}')
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">export ROUTE_URL=http://$(kubectl get route another-greeting-app -o jsonpath='{.spec.host}')
 curl $ROUTE_URL/messages/init
 hey -n 10 -c 4 -v $ROUTE_URL/messages</code></pre>
 </div>
