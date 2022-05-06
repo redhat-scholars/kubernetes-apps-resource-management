@@ -13,9 +13,13 @@
 ** xref:4resources.adoc#resourcehowto[Bonus Track: Setting Kubernetes values in Quarkus]
 * xref:5metrics.adoc[Tailor metrics]
 ** xref:5metrics.adoc#metricsquarkus[Metrics in Quarkus]
+** xref:5metrics.adoc#metricsprometheus[Inspect metrics in Prometheus]
 * xref:6monitoring.adoc[Observing Memory/CPU]
 ** xref:6monitoring.adoc#monitoringrequestlimits[Understanding requests and limits]
 ** xref:6monitoring.adoc#monitoringprometheus[Using Prometheus to size/update memory limits]
 ** xref:6monitoring.adoc#monitoringovercommiting[Overcomiting]
 ** xref:6monitoring.adoc#monitoringbonustrack[Bonus Track: Automatic Requests and Limits]
+* xref:7critical.adoc[Bonus:Protecting Critical Deployments]
+** xref:7critical.adoc#kube-integration-tests[Integration tests to avoid Kubernetes YAML issues]
+
 

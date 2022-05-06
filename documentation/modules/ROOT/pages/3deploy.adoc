@@ -155,11 +155,28 @@ docker login quay.io
 
 Now create and push your container image using jib:
 
+[tabs]
+====
+Mac::
++
+--
 [.console-input]
 [source,bash]
 ----
 ./mvnw clean package -Dquarkus.container-image.push=true
 ----
+--
+Windows::
++
+--
+[.console-input]
+[source,bash]
+----
+mvnw.cmd clean package -Dquarkus.container-image.push=true
+----
+--
+====
+
 
 [.console-output]
 [source,text]

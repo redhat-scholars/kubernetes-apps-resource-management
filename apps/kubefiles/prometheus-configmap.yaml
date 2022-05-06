@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-server-conf
+  labels:
+    name: prometheus-server-conf
+data:
+  prometheus.yml: |-
+    global:
+      scrape_interval:     15s # Set the scrape interval to every 15 seconds. Default is every 1 minute.
+      evaluation_interval: 15s # Evaluate rules every 15 seconds. The default is every 1 minute.
+      # scrape_timeout is set to the global default (10s).
+    
+    scrape_configs:
+      - job_name: 'another-greeting-app'
+        metrics_path: '/metrics'
+        scrape_interval: 3s
+        static_configs:
+          - targets: [ 'another-greeting-app:80' ]

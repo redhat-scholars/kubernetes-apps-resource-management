@@ -15,6 +15,9 @@ import org.jboss.resteasy.reactive.RestResponse.Status;
 
 import java.util.List;
 
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
+
 @Path("messages")
 public class GreetingResource {
 
@@ -22,7 +25,10 @@ public class GreetingResource {
     Logger LOGGER;
 
     @RestClient
-    HelloService helloService; 
+    HelloService helloService;
+
+    public static final String URI = "uri";
+    public static final String API_GREET = "api.greet";
 
     @Path("/init")
     @GET
@@ -43,6 +49,7 @@ public class GreetingResource {
 
     @POST
     @Transactional
+    @Timed(value = "greetings.creation", longTask = true, extraTags = {URI, API_GREET})
     public Message create(Message message) {
          Message.persist(message);
          return message;
@@ -59,8 +66,10 @@ public class GreetingResource {
     }
 
     @GET
+    @Counted(value = "http.get.requests", extraTags = {URI, API_GREET})
     public List<Message> findAll() {
         return Message.findAll().list();
     }
+    
 
 }
