@@ -168,7 +168,7 @@ quarkus.micrometer.binder.jvm=true#<6>
 <5> Customize the path where metrics are exposed.
 <6> Micrometer JVM metrics support.
 
-Go to thehttp://localhost:8080/q/swagger-ui/#/Greeting%20Resource/get_messages[Swagger UI] and make several requests.
+Go to the http://localhost:8080/q/swagger-ui/#/Greeting%20Resource/get_messages[Swagger UI] and make several requests.
 
 Now go to http://localhost:8080/metrics[http://localhost:8080/metrics] and search for `http_server_requests_seconds summary`. You will observe that your requests were automatically measured and they also contain the global tags:
 
@@ -349,7 +349,7 @@ curl $ROUTE_URL/metrics
 [#metricsprometheus]
 == Inspect metrics in Prometheus
 
-Find the route associated to your application (the one you used in <<Kubernetes Advanced>>) using either the UI or the in-browser terminal:
+Find the route associated to your application using either the UI or the in-browser terminal:
 
 [.console-input]
 [source,bash]
