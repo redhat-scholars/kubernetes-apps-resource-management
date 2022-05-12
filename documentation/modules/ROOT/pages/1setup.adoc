@@ -13,6 +13,13 @@ You can provision your own development environment at https://developers.redhat.
 [.mt-4.center]
 image::img.png[Sandbox Image,400,400,align="center"]
 
+Then you need to clone the repo with all the YAML files required for running the tutorial:
+
+[.console-input]
+[source,bash]
+----
+git clone https://github.com/redhat-scholars/kubernetes-apps-resource-management.git
+----
 
 // TODO login in terminal
 
