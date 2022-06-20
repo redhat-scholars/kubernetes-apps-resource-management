@@ -80,3 +80,25 @@ spec:
             periodSeconds: 30
             successThreshold: 1
             timeoutSeconds: 10
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    app.quarkus.io/commit-id: 60900d64d6f92af9e666b49e589016e50d1d238d
+    app.quarkus.io/build-timestamp: 2022-06-20 - 09:20:48 +0000
+  labels:
+    app.kubernetes.io/name: another-greeting-app
+    app.kubernetes.io/version: 1.0.0-SNAPSHOT
+  name: another-greeting-app
+spec:
+  rules:
+    - http:
+        paths:
+          - backend:
+              service:
+                name: another-greeting-app
+                port:
+                  name: http
+            path: /
+            pathType: Prefix

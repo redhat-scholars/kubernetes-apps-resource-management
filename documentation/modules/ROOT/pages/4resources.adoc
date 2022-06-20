@@ -70,7 +70,7 @@ This is because of JVM default ergonomics that we'll see in the following sectio
 
 The JVM has some defaults to determine the number of processors based on CPU quota, and the amount of memory used as heap memory. 
 
-These parameters will determine the the garbage collector (GC) algorithm and the performance of the application.
+These parameters will determine the garbage collector (GC) algorithm and the performance of the application.
 
 === Default Values
 
@@ -100,17 +100,36 @@ To know exactly which values are used, you can start the JVM with the following 
 
 `-XshowSettings:system`:: Shows system settings detected/set by JVM.
 
-`-Xlog:gc=info`:: Shows information about GC (i.e which algortihm is used)
+`-Xlog:gc=info`:: Shows information about GC (i.e which algorithm is used)
 
 `-Xlog:os+container=trace`:: These traces print whether or not container detection is actually working and what values the JVM is determining to be in place by inspecting the cgroup pseudo filesystem of a deployed application.
 
 In the terminal window, run the following command to deploy the same service as before but with `-XshowSettings:system -Xlog:gc=info -Xlog:os+container=info` flags set:
 
+
+[tabs]
+====
+From local::
++
+--
 [.console-input]
 [source,bash]
 ----
 kubectl apply -f apps/kubefiles/deploy-another-greeting-app-show-prop.yaml
 ----
+--
+Web Terminal::
++
+--
+[.console-input]
+[source,bash]
+----
+kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app-show-prop.yaml
+----
+
+--
+
+====
 
 [.console-output]
 [source,bash]
@@ -185,17 +204,33 @@ Operating System Metrics:
 ...
 ----
 <1> Using total amount of memory available in the node
-<2> Using GC serial as tehre is only one CPU available
+<2> Using GC serial as there is only one CPU available
 <3> Uses CGroups v1
 <4> Only 1 CPU is available
 
 === Clean Up
 
+[tabs]
+====
+From local::
++
+--
 [.console-input]
 [source,bash]
 ----
 kubectl delete -f apps/kubefiles/deploy-another-greeting-app-show-prop.yaml
 ----
+--
+Web Terminal::
++
+--
+[.console-input]
+[source,bash]
+----
+kubectl delete -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app-show-prop.yaml
+----
+--
+====
 
 [#resourceadjustcontainer]
 == Adjusting container resources
@@ -207,15 +242,32 @@ Deploy the application again:
 
 In the terminal window, run the following command:
 
+[tabs]
+====
+From local::
++
+--
 [.console-input]
 [source,bash]
 ----
 kubectl apply -f apps/kubefiles/deploy-another-greeting-app.yaml
 ----
+--
+Web Terminal::
++
+--
+[.console-input]
+[source,bash]
+----
+kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/apps/kubefiles/deploy-another-greeting-app.yaml
+----
+--
+====
 
-include::partial$exposing.adoc[]
+At this point, we can do two things to improve the resource limits used by the application: 
 
-At this point, we can do two things to adjust the limits: 
+** provide some default values
+** simulate traffic and adjust the limits
 
 === Simulating traffic
 
@@ -253,13 +305,29 @@ resources:
         memory: 280Mi
 ----
 
+[tabs]
+====
+From local::
++
+--
 [.console-input]
 [source,bash]
 ----
 kubectl apply -f apps/kubefiles/deploy-another-greeting-app-limits.yaml
 ----
+--
+Web Terminal::
++
+--
+[.console-input]
+[source,bash]
+----
+kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/apps/kubefiles/deploy-another-greeting-app-limits.yaml
+----
+--
+====
 
-Check the resources are deployed correctly by running the follwoing commands:
+Check the resources are deployed correctly by running the following commands:
 
 [.console-input]
 [source,bash]
@@ -331,7 +399,14 @@ For this reason, a good rule of thumb is to not allocate more than 75% of contai
 
 The `-XX:MaxRAMPercentage` flag let you set the JVM heap size dynamically using a percentage of the total avalable memory (`-XX:MaxRAMPercentage=75`).
 
-Undeploy the previous application and deploy one setting the max heap memory to 75%.
+Undeploy the previous application and deploy one setting the max heap memory to 75%:
+
+
+[tabs]
+====
+From local::
++
+--
 
 [.console-input]
 [source,bash]
@@ -340,8 +415,21 @@ kubectl delete -f apps/kubefiles/deploy-another-greeting-app-limits.yaml
 
 kubectl apply -f apps/kubefiles/deploy-another-greeting-app-75.yaml
 ----
+--
+Web Terminal::
++
+--
+[.console-input]
+[source,bash]
+----
+kubectl delete -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/apps/kubefiles/deploy-another-greeting-app-limits.yaml
 
-Check the resources are deployed correctly by running the follwoing commands:
+kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app-75.yaml
+----
+--
+====
+
+Check the resources are deployed correctly by running the following commands:
 
 [.console-input]
 [source,bash]
@@ -415,13 +503,29 @@ ZGC:: 2 CPU > 28Gb
 
 == Clean Up
 
-Undeploy the application:
+Remove the deployed Kubernetes resources by running:
 
+[tabs]
+====
+From local::
++
+--
 [.console-input]
 [source,bash]
 ----
 kubectl delete -f apps/kubefiles/deploy-another-greeting-app-75.yaml
 ----
+--
+Web Terminal::
++
+--
+[.console-input]
+[source,bash]
+----
+kubectl delete -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app-75.yaml
+----
+--
+====
 
 [#resourehowto]
 == Bonus Track

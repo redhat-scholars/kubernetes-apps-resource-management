@@ -1,28 +1,18 @@
 = Tailor metrics
 
 When building distributed systems, you should use metrics to ensure that you see all your requests, including errors or slow requests etc.
-Tracing helps you with following the evolution of a transaction and it usually needs to be sampled at high volumes of traffic
+Tracing helps you with following the evolution of a transaction, and it usually needs to be sampled at high volumes of traffic
 (because the amount of data increases proportionally to the traffic volume).
 
 == Setup
 
-To get the application, clone this repository and go to `apps/another-greeting-app`.
-
-[.console-input]
-[source,bash]
-----
-git clone https://github.com/redhat-scholars/kubernetes-apps-resource-management.git
-
-cd apps/another-greeting-app
-----
+As we will need to correlate our metrics and traces, we should make a setup for Prometheus.
 
 [tabs]
 ====
 Developer Sandbox::
 +
 --
-As we will need to correlate our metrics and traces, we should make a setup for Prometheus.
-
 IMPORTANT: This setup has development purposes and is due to resource constraints that exist within Red Hat OpenShift Developer Sandbox.
 
 First, open the Web Terminal of your Sandbox and type the command:
@@ -77,7 +67,7 @@ mvnw.cmd quarkus:add-extension -Dextensions="io.quarkus:quarkus-micrometer-regis
 
 === Configuration of common tags
 
-When deploying accross multiple projects/namespaces is always good to have an unified view over some application metrics.
+When deploying across multiple projects/namespaces is always good to have a unified view over some application metrics.
 Let's define several common tags for the application, varying in value at deployment time:
 
 [.console-input]
@@ -170,7 +160,7 @@ quarkus.micrometer.binder.jvm=true#<6>
 
 Go to the http://localhost:8080/q/swagger-ui/#/Greeting%20Resource/get_messages[Swagger UI] and make several requests.
 
-Now go to http://localhost:8080/metrics[http://localhost:8080/metrics] and search for `http_server_requests_seconds summary`. You will observe that your requests were automatically measured and they also contain the global tags:
+Now go to http://localhost:8080/metrics[http://localhost:8080/metrics] and search for `http_server_requests_seconds summary`. You will observe that your requests were automatically measured, and they also contain the global tags:
 
 [.console-output]
 [source, bash]
@@ -183,7 +173,7 @@ http_server_requests_seconds_sum{country="Romania",method="GET",outcome="SUCCESS
 ----
 
 The metrics listed will be exported to Prometheus and further queried over time.
-You can also define your own custom metrics, but please keep in mind the Out Of the Box ones as well.
+You can also define your own custom metrics, but please keep in mind the Out-of-the-Box ones as well.
 Let's modify `GreetingResource` with the following:
 
 [.console-input]
@@ -266,7 +256,7 @@ public class GreetingResource {
 }
 ----
 
-<1> Measure expected long running requests with `@Timed` annotation.
+<1> Measure expected long-running requests with `@Timed` annotation.
 <2> Count the creation of resources with `@Counted` annotation and your own extra tags.
 
 === Inspect the custom metrics

@@ -29,6 +29,16 @@ kubectl get routes
 NAME                   HOST/PORT                                                                  PATH   SERVICES               PORT   TERMINATION   WILDCARD
 another-greeting-app   another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com          another-greeting-app   http                 None
 ----
+
+
+Export the host of the route using:
+
+[.console-output]
+[source,bash]
+----
+URL=$(kubectl get route another-greeting-app --output jsonpath="{.status.ingress[*].host}"
+----
+
 --
 ====
 
@@ -37,7 +47,7 @@ With the URL to access to the service (in this case `another-greeting-app-asotob
 [.console-input]
 [source,bash]
 ----
-curl another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com/messages/init
+curl $URL/messages/init
 ----
 
 [.console-output]
@@ -51,7 +61,7 @@ And finally, let's query the service to get all greeting messages:
 [.console-input]
 [source,bash]
 ----
-curl another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com/messages
+curl $URL/messages
 ----
 
 [.console-output]
