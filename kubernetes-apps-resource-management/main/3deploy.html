@@ -52,7 +52,13 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="1setup.html">Setup</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="1setup.html#prerequisite">Prerequisite</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="2starter.html">Starter Project</a>
@@ -62,7 +68,7 @@
     <a class="nav-link" href="3deploy.html">Deploy</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="#deploydb">Deploy Database</a>
+    <a class="nav-link" href="#deploydb">Setup Database</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="#deployapp">Deploy Application</a>
@@ -159,7 +165,7 @@
 <article class="doc">
 <h1 class="page">Deploy to Kubernetes</h1>
 <div class="sect1">
-<h2 id="deploydb"><a class="anchor" href="#deploydb"></a>Deploy Database</h2>
+<h2 id="deploydb"><a class="anchor" href="#deploydb"></a>Setup Database</h2>
 <div class="sectionbody">
 <div class="tabset is-loading">
 <div class="ulist tabs">
@@ -247,9 +253,32 @@
 <div class="paragraph">
 <p>In the terminal window, run the following command:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset2_from-local"></a>From local</p>
+</li>
+<li>
+<p><a id="tabset2_web-terminal"></a>Web Terminal</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset2_from-local">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f apps/kubefiles/deploy-another-greeting-app.yaml</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_web-terminal">
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app.yaml</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="listingblock console-output">
@@ -300,12 +329,12 @@ postgres               ClusterIP   172.30.28.111    &lt;none&gt;        5432/TCP
 <div class="ulist tabs">
 <ul>
 <li>
-<p><a id="tabset2_developer-sandbox"></a>Developer Sandbox</p>
+<p><a id="tabset3_developer-sandbox"></a>Developer Sandbox</p>
 </li>
 </ul>
 </div>
 <div class="content">
-<div class="tab-pane" aria-labelledby="tabset2_developer-sandbox">
+<div class="tab-pane" aria-labelledby="tabset3_developer-sandbox">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc expose svc another-greeting-app</code></pre>
@@ -327,6 +356,14 @@ postgres               ClusterIP   172.30.28.111    &lt;none&gt;        5432/TCP
 another-greeting-app   another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com          another-greeting-app   http                 None</code></pre>
 </div>
 </div>
+<div class="paragraph">
+<p>Export the host of the route using:</p>
+</div>
+<div class="listingblock console-output">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">URL=$(kubectl get route another-greeting-app --output jsonpath="{.status.ingress[*].host}"</code></pre>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -335,7 +372,7 @@ another-greeting-app   another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.op
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com/messages/init</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl $URL/messages/init</code></pre>
 </div>
 </div>
 <div class="listingblock console-output">
@@ -348,7 +385,7 @@ another-greeting-app   another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.op
 </div>
 <div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com/messages</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl $URL/messages</code></pre>
 </div>
 </div>
 <div class="listingblock console-output">
@@ -465,22 +502,22 @@ If you don&#8217;t, your push <strong>will</strong> fail.
 <div class="ulist tabs">
 <ul>
 <li>
-<p><a id="tabset3_mac"></a>Mac</p>
+<p><a id="tabset4_mac"></a>Mac</p>
 </li>
 <li>
-<p><a id="tabset3_windows"></a>Windows</p>
+<p><a id="tabset4_windows"></a>Windows</p>
 </li>
 </ul>
 </div>
 <div class="content">
-<div class="tab-pane" aria-labelledby="tabset3_mac">
+<div class="tab-pane" aria-labelledby="tabset4_mac">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">./mvnw clean package -Dquarkus.container-image.push=true</code></pre>
 </div>
 </div>
 </div>
-<div class="tab-pane" aria-labelledby="tabset3_windows">
+<div class="tab-pane" aria-labelledby="tabset4_windows">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">mvnw.cmd clean package -Dquarkus.container-image.push=true</code></pre>

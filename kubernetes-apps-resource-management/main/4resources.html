@@ -52,7 +52,13 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="1setup.html">Setup</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="1setup.html#prerequisite">Prerequisite</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="2starter.html">Starter Project</a>
@@ -62,7 +68,7 @@
     <a class="nav-link" href="3deploy.html">Deploy</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="3deploy.html#deploydb">Deploy Database</a>
+    <a class="nav-link" href="3deploy.html#deploydb">Setup Database</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="3deploy.html#deployapp">Deploy Application</a>
@@ -243,7 +249,7 @@ This is because of JVM default ergonomics that we&#8217;ll see in the following 
 <p>The JVM has some defaults to determine the number of processors based on CPU quota, and the amount of memory used as heap memory.</p>
 </div>
 <div class="paragraph">
-<p>These parameters will determine the the garbage collector (GC) algorithm and the performance of the application.</p>
+<p>These parameters will determine the garbage collector (GC) algorithm and the performance of the application.</p>
 </div>
 <div class="sect2">
 <h3 id="_default_values"><a class="anchor" href="#_default_values"></a>Default Values</h3>
@@ -297,7 +303,7 @@ The total memory available in the Pod is <code>750Mi</code>, and 1/4 of this mem
 </dd>
 <dt class="hdlist1"><code>-Xlog:gc=info</code></dt>
 <dd>
-<p>Shows information about GC (i.e which algortihm is used)</p>
+<p>Shows information about GC (i.e which algorithm is used)</p>
 </dd>
 <dt class="hdlist1"><code>-Xlog:os+container=trace</code></dt>
 <dd>
@@ -308,9 +314,32 @@ The total memory available in the Pod is <code>750Mi</code>, and 1/4 of this mem
 <div class="paragraph">
 <p>In the terminal window, run the following command to deploy the same service as before but with <code>-XshowSettings:system -Xlog:gc=info -Xlog:os+container=info</code> flags set:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset1_from-local"></a>From local</p>
+</li>
+<li>
+<p><a id="tabset1_web-terminal"></a>Web Terminal</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset1_from-local">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f apps/kubefiles/deploy-another-greeting-app-show-prop.yaml</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset1_web-terminal">
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app-show-prop.yaml</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 <div class="listingblock console-output">
@@ -392,7 +421,7 @@ Operating System Metrics:
 </tr>
 <tr>
 <td><i class="conum" data-value="2"></i><b>2</b></td>
-<td>Using GC serial as tehre is only one CPU available</td>
+<td>Using GC serial as there is only one CPU available</td>
 </tr>
 <tr>
 <td><i class="conum" data-value="3"></i><b>3</b></td>
@@ -407,9 +436,32 @@ Operating System Metrics:
 </div>
 <div class="sect2">
 <h3 id="_clean_up"><a class="anchor" href="#_clean_up"></a>Clean Up</h3>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset2_from-local"></a>From local</p>
+</li>
+<li>
+<p><a id="tabset2_web-terminal"></a>Web Terminal</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset2_from-local">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f apps/kubefiles/deploy-another-greeting-app-show-prop.yaml</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset2_web-terminal">
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app-show-prop.yaml</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>
@@ -428,76 +480,46 @@ In this section we&#8217;re going to explore how to adjust correctly this greeti
 <div class="paragraph">
 <p>In the terminal window, run the following command:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset3_from-local"></a>From local</p>
+</li>
+<li>
+<p><a id="tabset3_web-terminal"></a>Web Terminal</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset3_from-local">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f apps/kubefiles/deploy-another-greeting-app.yaml</code></pre>
 </div>
 </div>
-<div class="paragraph">
-<p>The application is up and running, it&#8217;s time to initialize it, and then send some requests.</p>
 </div>
-<div class="tabset is-loading">
-<div class="ulist tabs">
+<div class="tab-pane" aria-labelledby="tabset3_web-terminal">
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/apps/kubefiles/deploy-another-greeting-app.yaml</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>At this point, we can do two things to improve the resource limits used by the application:</p>
+</div>
+<div class="ulist">
 <ul>
 <li>
-<p><a id="tabset1_developer-sandbox"></a>Developer Sandbox</p>
+<p>provide some default values</p>
+</li>
+<li>
+<p>simulate traffic and adjust the limits</p>
 </li>
 </ul>
-</div>
-<div class="content">
-<div class="tab-pane" aria-labelledby="tabset1_developer-sandbox">
-<div class="listingblock console-input">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">oc expose svc another-greeting-app</code></pre>
-</div>
-</div>
-<div class="listingblock console-output">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">route.route.openshift.io/another-greeting-app exposed</code></pre>
-</div>
-</div>
-<div class="listingblock console-input">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl get routes</code></pre>
-</div>
-</div>
-<div class="listingblock console-output">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">NAME                   HOST/PORT                                                                  PATH   SERVICES               PORT   TERMINATION   WILDCARD
-another-greeting-app   another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com          another-greeting-app   http                 None</code></pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p>With the URL to access to the service (in this case <code>another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com</code>), let&#8217;s initialize the application.</p>
-</div>
-<div class="listingblock console-input">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com/messages/init</code></pre>
-</div>
-</div>
-<div class="listingblock console-output">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">DB initialized</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>And finally, let&#8217;s query the service to get all greeting messages:</p>
-</div>
-<div class="listingblock console-input">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">curl another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.openshiftapps.com/messages</code></pre>
-</div>
-</div>
-<div class="listingblock console-output">
-<div class="content">
-<pre class="highlightjs highlight"><code class="language-json hljs" data-lang="json">[{"id":1,"content":"Hello","language":"en","country":"United Kingdom"},{"id":2,"content":"Hola","language":"es","country":"Spain"},{"id":3,"content":"Salut","language":"ro","country":"Romania"},{"id":4,"content":"Salut","language":"fr","country":"France"}]</code></pre>
-</div>
-</div>
-<div class="paragraph">
-<p>At this point, we can do two things to adjust the limits:</p>
 </div>
 <div class="sect2">
 <h3 id="_simulating_traffic"><a class="anchor" href="#_simulating_traffic"></a>Simulating traffic</h3>
@@ -542,13 +564,36 @@ You can select CPU Usage or Memory Usage query to check the resources consumed b
         memory: 280Mi</code></pre>
 </div>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset4_from-local"></a>From local</p>
+</li>
+<li>
+<p><a id="tabset4_web-terminal"></a>Web Terminal</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset4_from-local">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f apps/kubefiles/deploy-another-greeting-app-limits.yaml</code></pre>
 </div>
 </div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset4_web-terminal">
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/apps/kubefiles/deploy-another-greeting-app-limits.yaml</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div class="paragraph">
-<p>Check the resources are deployed correctly by running the follwoing commands:</p>
+<p>Check the resources are deployed correctly by running the following commands:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
@@ -628,8 +673,21 @@ For this reason, a good rule of thumb is to not allocate more than 75% of contai
 <p>The <code>-XX:MaxRAMPercentage</code> flag let you set the JVM heap size dynamically using a percentage of the total avalable memory (<code>-XX:MaxRAMPercentage=75</code>).</p>
 </div>
 <div class="paragraph">
-<p>Undeploy the previous application and deploy one setting the max heap memory to 75%.</p>
+<p>Undeploy the previous application and deploy one setting the max heap memory to 75%:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset5_from-local"></a>From local</p>
+</li>
+<li>
+<p><a id="tabset5_web-terminal"></a>Web Terminal</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset5_from-local">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f apps/kubefiles/deploy-another-greeting-app-limits.yaml
@@ -637,8 +695,20 @@ For this reason, a good rule of thumb is to not allocate more than 75% of contai
 kubectl apply -f apps/kubefiles/deploy-another-greeting-app-75.yaml</code></pre>
 </div>
 </div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset5_web-terminal">
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/apps/kubefiles/deploy-another-greeting-app-limits.yaml
+
+kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app-75.yaml</code></pre>
+</div>
+</div>
+</div>
+</div>
+</div>
 <div class="paragraph">
-<p>Check the resources are deployed correctly by running the follwoing commands:</p>
+<p>Check the resources are deployed correctly by running the following commands:</p>
 </div>
 <div class="listingblock console-input">
 <div class="content">
@@ -753,11 +823,34 @@ We encourage you in JVM applications to set request and limit value to the same 
 <h2 id="_clean_up_2"><a class="anchor" href="#_clean_up_2"></a>Clean Up</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Undeploy the application:</p>
+<p>Remove the deployed Kubernetes resources by running:</p>
 </div>
+<div class="tabset is-loading">
+<div class="ulist tabs">
+<ul>
+<li>
+<p><a id="tabset6_from-local"></a>From local</p>
+</li>
+<li>
+<p><a id="tabset6_web-terminal"></a>Web Terminal</p>
+</li>
+</ul>
+</div>
+<div class="content">
+<div class="tab-pane" aria-labelledby="tabset6_from-local">
 <div class="listingblock console-input">
 <div class="content">
 <pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f apps/kubefiles/deploy-another-greeting-app-75.yaml</code></pre>
+</div>
+</div>
+</div>
+<div class="tab-pane" aria-labelledby="tabset6_web-terminal">
+<div class="listingblock console-input">
+<div class="content">
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">kubectl delete -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app-75.yaml</code></pre>
+</div>
+</div>
+</div>
 </div>
 </div>
 </div>

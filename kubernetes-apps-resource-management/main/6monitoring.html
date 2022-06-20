@@ -52,7 +52,13 @@
   <li class="nav-item" data-depth="0">
 <ul class="nav-list">
   <li class="nav-item" data-depth="1">
+    <button class="nav-item-toggle"></button>
     <a class="nav-link" href="1setup.html">Setup</a>
+<ul class="nav-list">
+  <li class="nav-item" data-depth="2">
+    <a class="nav-link" href="1setup.html#prerequisite">Prerequisite</a>
+  </li>
+</ul>
   </li>
   <li class="nav-item" data-depth="1">
     <a class="nav-link" href="2starter.html">Starter Project</a>
@@ -62,7 +68,7 @@
     <a class="nav-link" href="3deploy.html">Deploy</a>
 <ul class="nav-list">
   <li class="nav-item" data-depth="2">
-    <a class="nav-link" href="3deploy.html#deploydb">Deploy Database</a>
+    <a class="nav-link" href="3deploy.html#deploydb">Setup Database</a>
   </li>
   <li class="nav-item" data-depth="2">
     <a class="nav-link" href="3deploy.html#deployapp">Deploy Application</a>
@@ -178,7 +184,7 @@
 <p>It&#8217;s important to understand how Kubernetes behave when <code>request</code> or <code>limit</code> values are exceeded.</p>
 </div>
 <div class="sect2">
-<h3 id="_not_enought_resources"><a class="anchor" href="#_not_enought_resources"></a>Not enought resources</h3>
+<h3 id="_not_enough_resources"><a class="anchor" href="#_not_enough_resources"></a>Not enough resources</h3>
 <div class="paragraph">
 <p>The first thing to know is how much memory your nodes have available.
 To get it, run the following command:</p>
