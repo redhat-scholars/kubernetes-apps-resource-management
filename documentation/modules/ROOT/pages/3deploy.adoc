@@ -1,7 +1,7 @@
 = Deploy to Kubernetes 
 
 [#deploydb]
-== Deploy Database
+== Setup Database
 
 [tabs]
 ====
@@ -41,11 +41,30 @@ We've provided a simple Kubernetes YAML file with everything set up, to deploy t
 
 In the terminal window, run the following command:
 
+[tabs]
+====
+From local::
++
+--
+
 [.console-input]
 [source,bash]
 ----
 kubectl apply -f apps/kubefiles/deploy-another-greeting-app.yaml
 ----
+--
+Web Terminal::
++
+--
+
+[.console-input]
+[source,bash]
+----
+kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app.yaml
+----
+
+--
+====
 
 [.console-output]
 [source,bash]

@@ -11,7 +11,7 @@ Let's see how Prometheus can help us detect incorrect limits or set these values
 
 It's important to understand how Kubernetes behave when `request` or `limit` values are exceeded.
 
-=== Not enought resources
+=== Not enough resources
 
 The first thing to know is how much memory your nodes have available.
 To get it, run the following command:

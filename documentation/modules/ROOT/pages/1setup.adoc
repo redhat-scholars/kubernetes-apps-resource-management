@@ -2,6 +2,15 @@
 = Setup
 include::_attributes.adoc[]
 
+[#prerequisite]
+== Prerequisite CLI tools
+
+include::partial$prerequisites-kubernetes.adoc[]
+|===
+
+include::https://raw.githubusercontent.com/redhat-developer-demos/rhd-tutorial-common/master/optional-requisites.adoc[]
+|===
+
 == IDE
 
 You can use any IDE for this tutorial but if you didn't try it before, we recommend https://code.visualstudio.com/download[VS Code, window="_blank"] with the https://marketplace.visualstudio.com/items?itemName=redhat.java[Language Support for Java(TM) by Red Hat, window="_blank"] and the https://marketplace.visualstudio.com/items?itemName=redhat.vscode-quarkus[Quarkus, window="_blank"] extensions.
