@@ -259,7 +259,7 @@ Web Terminal::
 [.console-input]
 [source,bash]
 ----
-kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/apps/kubefiles/deploy-another-greeting-app.yaml
+kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app.yaml
 ----
 --
 ====
@@ -280,7 +280,7 @@ Let's run a hey command against the route exposed by previous deployment:
 ----
 export ROUTE_URL=http://$(kubectl get route another-greeting-app -o jsonpath='{.spec.host}')
 curl $ROUTE_URL/messages/init
-hey -n 10 -c 4 -v $ROUTE_URL/messages
+hey -n 10 -c 4 $ROUTE_URL/messages
 ----
 
 In the Developer Sandbox click on `Observe` and select the `Metric` tab. 
