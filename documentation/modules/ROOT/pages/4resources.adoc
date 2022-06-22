@@ -259,7 +259,7 @@ Web Terminal::
 [.console-input]
 [source,bash]
 ----
-kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/apps/kubefiles/deploy-another-greeting-app.yaml
+kubectl apply -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app.yaml
 ----
 --
 ====
