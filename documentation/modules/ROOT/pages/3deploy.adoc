@@ -117,7 +117,7 @@ Undeploy the application by running the following command in a terminal window:
 [.console-input]
 [source,bash]
 ----
-kubectl delete -f apps/kubefiles/deploy-another-greeting-app.yaml
+kubectl delete -f https://raw.githubusercontent.com/redhat-scholars/kubernetes-apps-resource-management/main/apps/kubefiles/deploy-another-greeting-app.yaml
 ----
 
 [#deployhowto]
