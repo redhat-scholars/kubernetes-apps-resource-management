@@ -33,10 +33,10 @@ another-greeting-app   another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.op
 
 Export the host of the route using:
 
-[.console-output]
+[.console-input]
 [source,bash]
 ----
-URL=$(kubectl get route another-greeting-app --output jsonpath="{.status.ingress[*].host}"
+URL=$(kubectl get route another-greeting-app --output jsonpath="{.status.ingress[*].host}")
 ----
 
 --
