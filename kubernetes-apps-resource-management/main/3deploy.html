@@ -359,9 +359,9 @@ another-greeting-app   another-greeting-app-asotobue-dev.apps.sandbox.x8i5.p1.op
 <div class="paragraph">
 <p>Export the host of the route using:</p>
 </div>
-<div class="listingblock console-output">
+<div class="listingblock console-input">
 <div class="content">
-<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">URL=$(kubectl get route another-greeting-app --output jsonpath="{.status.ingress[*].host}"</code></pre>
+<pre class="highlightjs highlight"><code class="language-bash hljs" data-lang="bash">URL=$(kubectl get route another-greeting-app --output jsonpath="{.status.ingress[*].host}")</code></pre>
 </div>
 </div>
 </div>
